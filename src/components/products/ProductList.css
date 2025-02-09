@@ -33,3 +33,34 @@
     color: #888;
     font-size: 16px;
 }
+
+.product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+    background-color: white;
+    width: 250px;
+    border-radius: 8px;
+}
+
+button {
+    margin: 5px;
+    padding: 8px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #ff5733;
+    color: white;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #c70039;
+}

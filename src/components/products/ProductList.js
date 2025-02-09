@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axiosClient from "../../api/axiosClient";
+import { CartContext } from "../../context/CartContext";
 import "./ProductList.css";
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
+    const { addToCart } = useContext(CartContext);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -20,15 +22,16 @@ const ProductList = () => {
 
     return (
         <div className="product-list">
-            <h1>Danh sách sản phẩm</h1>
-            <ul>
-                {products.map((product) => (
-                    <li key={product.id}>
-                        <span>{product.name}</span>
-                        <span className="price">{product.price} VND</span>
-                    </li>
-                ))}
-            </ul>
+            {products.map((product) => (
+                <div key={product.id} className="product-card">
+                    <h3>{product.name}</h3>
+                    <p>Price: {product.price} VND</p>
+                    <button onClick={() => alert("Chi tiết sản phẩm: " + product.name)}>
+                        Chi tiết
+                    </button>
+                    <button onClick={() => addToCart(product)}>Thêm vào giỏ hàng</button>
+                </div>
+            ))}
         </div>
     );
 };

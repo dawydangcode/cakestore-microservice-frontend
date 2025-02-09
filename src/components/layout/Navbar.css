@@ -26,3 +26,36 @@
 .navbar a:hover {
     color: #ff5733;
 }
+
+.navbar {
+    background-color: #ffcc99;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    position: relative;
+}
+
+.cart-count {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+    font-size: 12px;
+    position: absolute;
+    top: -8px;
+    right: -10px;
+}
