@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 
 const CartPage = () => {
-    const { cart } = useContext(CartContext);
+    const { cart, removeFromCart } = useContext(CartContext);
 
     return (
         <div>
@@ -14,6 +14,7 @@ const CartPage = () => {
                     {cart.map((product) => (
                         <li key={product.id}>
                             {product.name} - {product.price} VND x {product.quantity}
+                            <button onClick={() => removeFromCart(product.id)}>Xoá</button>
                         </li>
                     ))}
                 </ul>

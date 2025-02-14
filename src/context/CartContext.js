@@ -19,8 +19,17 @@ export const CartProvider = ({ children }) => {
         });
     };
 
+    // Xoá sản phẩm khỏi giỏ hàng
+    const removeFromCart = (productId) => {
+        setCart((prevCart) => {
+            return prevCart
+                .map((item) => item.id === productId ? { ...item, quantity: item.quantity - 1 } : item)
+                .filter((item) => item.quantity > 0); // Xoá nếu số lượng = 0
+        });
+    };
+
     return (
-        <CartContext.Provider value={{ cart, addToCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
             {children}
         </CartContext.Provider>
     );
