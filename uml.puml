@@ -1,0 +1,30 @@
+@startuml
+rectangle "User" as User
+rectangle "API Gateway" as APIG
+rectangle "Auth Service" as Auth
+database "Auth DB" as AuthDB
+rectangle "Product Service" as Product
+database "Product DB" as ProductDB
+rectangle "Cart Service" as Cart
+database "Cart DB" as CartDB
+rectangle "Order Service" as Order
+database "Order DB" as OrderDB
+rectangle "Payment Service" as Payment
+database "Payment DB" as PaymentDB
+
+User --> APIG : Gửi yêu cầu HTTP
+APIG --> Auth : Xác thực (JWT)
+APIG --> Product : Lấy danh sách sản phẩm
+APIG --> Cart : Thêm/xóa sản phẩm vào giỏ hàng
+APIG --> Order : Tạo đơn hàng
+Order --> Cart : Lấy thông tin giỏ hàng
+Order --> Payment : Xử lý thanh toán
+Payment --> Order : Xác nhận thanh toán
+
+Auth --> AuthDB : Lưu/Xác thực người dùng
+Cart --> CartDB : Lưu giỏ hàng
+Product --> ProductDB : Lưu sản phẩm
+Order --> OrderDB : Lưu thông tin đơn hàng
+Payment --> PaymentDB : Lưu giao dịch thanh toán
+
+@enduml
