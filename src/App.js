@@ -7,11 +7,21 @@ import Home from "./pages/home/Home";
 import ProductList from "./components/products/ProductList";
 import Cart from "./pages/CartPage";
 import Login from "./components/Login";
-import LogoutButton from "./components/LogoutButton"; // Import nút đăng xuất
+import LogoutButton from "./components/LogoutButton";
+import Admin from "./components/Admin"; // Import trang Admin
+import { hasRole } from "./auth/authService"; // Import hàm kiểm tra role
 import "./App.css";
 
-const PrivateRoute = ({ element }) => {
-    return getToken() ? element : <Navigate to="/login" replace />;
+// Component bảo vệ route dựa trên token và role
+const PrivateRoute = ({ element, allowedRole }) => {
+    const token = getToken();
+    if (!token) {
+        return <Navigate to="/login" replace />;
+    }
+    if (allowedRole && !hasRole(allowedRole)) {
+        return <Navigate to="/" replace />;
+    }
+    return element;
 };
 
 function App() {
@@ -26,9 +36,13 @@ function App() {
                             <Route path="/products" element={<ProductList />} />
                             <Route path="/cart" element={<PrivateRoute element={<Cart />} />} />
                             <Route path="/login" element={<Login />} />
+                            <Route
+                                path="/admin"
+                                element={<PrivateRoute element={<Admin />} allowedRole="ROLE_ADMIN" />}
+                            />
                         </Routes>
                     </main>
-                    {getToken() && <LogoutButton />} {/* Hiển thị nút đăng xuất nếu đã đăng nhập */}
+                    {getToken() && <LogoutButton />}
                 </div>
             </Router>
         </CartProvider>

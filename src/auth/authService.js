@@ -3,14 +3,17 @@ import axiosClient from "../api/axiosClient";
 export const login = async (username, password) => {
     try {
         const response = await axiosClient.post("/sign-in", { userName: username, password });
-        const { token, roles } = response.data.response;
+        const { token, roles, username: userName } = response.data.response;
 
-        // Trích xuất mảng chuỗi từ roles
         const roleList = roles.map(role => role.authority);
 
-        // Lưu token và roles vào localStorage
+        // Lưu dữ liệu vào localStorage
         localStorage.setItem("token", token);
         localStorage.setItem("roles", JSON.stringify(roleList));
+        localStorage.setItem("userName", userName);
+
+        // Debug để kiểm tra
+        console.log("Login success:", { token, roles: roleList, userName });
 
         return { token, roles: roleList };
     } catch (error) {
@@ -22,7 +25,10 @@ export const login = async (username, password) => {
 export const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("roles");
+    localStorage.removeItem("userName");
 };
+
+export const getToken = () => localStorage.getItem("token");
 
 export const getRoles = () => {
     const roles = localStorage.getItem("roles");
@@ -32,4 +38,8 @@ export const getRoles = () => {
 export const hasRole = (role) => {
     const roles = getRoles();
     return roles && roles.includes(role);
+};
+
+export const getUserName = () => {
+    return localStorage.getItem("userName") || "Người dùng";
 };

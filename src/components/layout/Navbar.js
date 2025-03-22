@@ -3,14 +3,23 @@ import { Link } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
 import { getToken, logout } from "../../auth/auth"; // Giả sử bạn có auth service
 import "./Navbar.css";
+import {  getUserName } from "../../auth/authService"; // Import getUserName
 
 const Navbar = () => {
     const { cart } = useContext(CartContext);
     const [menuOpen, setMenuOpen] = useState(false);
     const dropdownRef = useRef(null); // Thêm ref để xử lý click ra ngoài
+    
 
-    const isLoggedIn = !!getToken(); // Kiểm tra nếu có token thì đã đăng nhập
+    const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
 
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setIsLoggedIn(!!getToken());
+        };
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, []);
     // Đóng menu khi nhấp ra ngoài
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -42,8 +51,8 @@ const Navbar = () => {
                 <div className="dropdown-menu" ref={dropdownRef}>
                     {isLoggedIn ? (
                         <>
-                            <p>👤 Người dùng</p>
-                            <button onClick={() => { logout(); window.location.href = "/login"; }}>
+                            <p>👤 {getUserName()}</p> {/* Hiển thị userName */}
+                            <button onClick={() => { logout(); setIsLoggedIn(false); window.location.href = "/login"; }}>
                                 Đăng xuất
                             </button>
                         </>
