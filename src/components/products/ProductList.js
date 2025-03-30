@@ -7,6 +7,7 @@ const ProductList = () => {
     const [products, setProducts] = useState([]);
     const { addToCart } = useContext(CartContext);
 
+    // Lấy danh sách sản phẩm từ backend
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -20,6 +21,12 @@ const ProductList = () => {
         fetchProducts();
     }, []);
 
+    // Xử lý thêm sản phẩm vào giỏ hàng
+    const handleAddToCart = (product) => {
+        addToCart(product); // Gọi hàm từ CartContext
+        alert(`${product.name} đã được thêm vào giỏ hàng!`);
+    };
+
     return (
         <div className="product-list">
             {products.map((product) => (
@@ -29,7 +36,9 @@ const ProductList = () => {
                     <button onClick={() => alert("Chi tiết sản phẩm: " + product.name)}>
                         Chi tiết
                     </button>
-                    <button onClick={() => addToCart(product)}>Thêm vào giỏ hàng</button>
+                    <button onClick={() => handleAddToCart(product)}>
+                        Thêm vào giỏ hàng
+                    </button>
                 </div>
             ))}
         </div>
