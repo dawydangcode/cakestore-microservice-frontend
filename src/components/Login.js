@@ -8,22 +8,26 @@ const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const { login: setAuth } = useContext(AuthContext);
-    const { syncCartWithBackend } = useContext(CartContext); // Lấy hàm từ CartContext
+    const { syncCartWithBackend } = useContext(CartContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { token, cartItems } = await login(username, password);
+            const { token, roles, cartItems } = await login(username, password); // Lấy roles
             setAuth(token, localStorage.getItem("userName")); // Cập nhật AuthContext
             await syncCartWithBackend(); // Đồng bộ giỏ hàng từ back-end
-            navigate("/"); // Chuyển hướng
+
+            // Kiểm tra vai trò và điều hướng
+            if (roles.includes("ROLE_ADMIN")) {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
         } catch (error) {
             alert("Đăng nhập thất bại!");
         }
     };
-
-    
 
     return (
         <form onSubmit={handleSubmit}>
