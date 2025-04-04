@@ -1,56 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { CartContext } from "../context/CartContext";
 import { login } from "../auth/authService";
-
 
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
+    const { login: setAuth } = useContext(AuthContext);
+    const { syncCartWithBackend } = useContext(CartContext);
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { roles } = await login(username, password);
+            const { token, roles, cartItems } = await login(username, password); // Lấy roles
+            setAuth(token, localStorage.getItem("userName")); // Cập nhật AuthContext
+            await syncCartWithBackend(); // Đồng bộ giỏ hàng từ back-end
 
-            // Kiểm tra roles và chuyển hướng
+            // Kiểm tra vai trò và điều hướng
             if (roles.includes("ROLE_ADMIN")) {
                 navigate("/admin");
-            } else if (roles.includes("ROLE_USER")) {
-                navigate("/");
             } else {
-                setError("Unknown role");
+                navigate("/");
             }
-        } catch (err) {
-            setError("Login failed: " + (err.response?.data?.message || err.message));
+        } catch (error) {
+            alert("Đăng nhập thất bại!");
         }
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label>Username:</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <button type="submit">Login</button>
-            </form>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-        </div>
+        <form onSubmit={handleSubmit}>
+            <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+            />
+            <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+            />
+            <button type="submit">Đăng nhập</button>
+        </form>
     );
 };
 

@@ -1,26 +1,15 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
-import { getToken, logout } from "../../auth/auth"; // Giả sử bạn có auth service
+import { AuthContext } from "../../context/AuthContext";
 import "./Navbar.css";
-import {  getUserName } from "../../auth/authService"; // Import getUserName
 
 const Navbar = () => {
     const { cart } = useContext(CartContext);
+    const { isLoggedIn, userName, logout } = useContext(AuthContext);
     const [menuOpen, setMenuOpen] = useState(false);
-    const dropdownRef = useRef(null); // Thêm ref để xử lý click ra ngoài
-    
+    const dropdownRef = useRef(null);
 
-    const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
-
-    useEffect(() => {
-        const handleStorageChange = () => {
-            setIsLoggedIn(!!getToken());
-        };
-        window.addEventListener("storage", handleStorageChange);
-        return () => window.removeEventListener("storage", handleStorageChange);
-    }, []);
-    // Đóng menu khi nhấp ra ngoài
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -30,6 +19,12 @@ const Navbar = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const handleLogout = () => {
+        logout();
+        setMenuOpen(false);
+        window.location.href = "/login";
+    };
 
     return (
         <nav className="navbar">
@@ -42,19 +37,15 @@ const Navbar = () => {
                         {cart.length > 0 && <span className="cart-count">{cart.reduce((total, item) => total + item.quantity, 0)}</span>}
                     </Link>
                 </li>
-                {/* Nút Menu */}
                 <li className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>☰</li>
             </ul>
 
-            {/* Dropdown Menu */}
             {menuOpen && (
                 <div className="dropdown-menu" ref={dropdownRef}>
                     {isLoggedIn ? (
                         <>
-                            <p>👤 {getUserName()}</p> {/* Hiển thị userName */}
-                            <button onClick={() => { logout(); setIsLoggedIn(false); window.location.href = "/login"; }}>
-                                Đăng xuất
-                            </button>
+                            <p>👤 {userName}</p>
+                            <button onClick={handleLogout}>Đăng xuất</button>
                         </>
                     ) : (
                         <>

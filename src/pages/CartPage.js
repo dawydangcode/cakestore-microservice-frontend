@@ -11,10 +11,10 @@ const CartPage = () => {
                 <p>Giỏ hàng của bạn đang trống.</p>
             ) : (
                 <ul>
-                    {cart.map((product) => (
-                        <li key={product.id}>
-                            {product.name} - {product.price} VND x {product.quantity}
-                            <button onClick={() => removeFromCart(product.id)}>Xoá</button>
+                    {cart.map((item) => (
+                        <li key={item.productId}>
+                            {item.name} - {item.price} VND x {item.quantity}
+                            <button onClick={() => removeFromCart(item.productId)}>Xoá</button>
                         </li>
                     ))}
                 </ul>
