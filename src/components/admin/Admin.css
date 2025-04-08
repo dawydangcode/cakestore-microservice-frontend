@@ -1,0 +1,67 @@
+/* src/components/admin/Admin.css */
+.admin-section {
+    margin-bottom: 30px;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+}
+
+.admin-form input, .admin-form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.admin-form button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.admin-form button:hover {
+    background-color: #218838;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-table th, .product-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.product-table th {
+    background-color: #f2f2f2;
+}
+
+.product-table button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.product-table button:hover {
+    background-color: #0056b3;
+}
+
+.product-table button:nth-child(2) {
+    background-color: #dc3545;
+}
+
+.product-table button:nth-child(2):hover {
+    background-color: #c82333;
+}
