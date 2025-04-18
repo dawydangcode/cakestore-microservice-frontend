@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/layout/Navbar";
 import Home from "./pages/home/Home";
 import ProductList from "./components/products/ProductList";
+import ProductDetail from "./components/products/ProductDetail"; // Thêm import
 import Cart from "./pages/CartPage";
 import Login from "./components/Login";
 import LogoutButton from "./components/LogoutButton";
@@ -30,6 +31,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<><Navbar /><Home /></>} />
                             <Route path="/products" element={<><Navbar /><ProductList /></>} />
+                            <Route path="/product/:id" element={<><Navbar /><ProductDetail /></>} /> 
                             <Route path="/cart" element={<PrivateRoute element={<><Navbar /><Cart /></>} />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/admin/*" element={<PrivateRoute element={<AdminLayout />} allowedRole="ROLE_ADMIN" />}>

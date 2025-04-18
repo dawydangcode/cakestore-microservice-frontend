@@ -1,4 +1,6 @@
+//src/components/products/ProductList.js
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Thêm import
 import axiosClient from "../../api/axiosClient";
 import { CartContext } from "../../context/CartContext";
 import "./ProductList.css";
@@ -6,8 +8,8 @@ import "./ProductList.css";
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const { addToCart } = useContext(CartContext);
+    const navigate = useNavigate(); // Khởi tạo useNavigate
 
-    // Lấy danh sách sản phẩm từ backend
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -21,9 +23,8 @@ const ProductList = () => {
         fetchProducts();
     }, []);
 
-    // Xử lý thêm sản phẩm vào giỏ hàng
     const handleAddToCart = (product) => {
-        addToCart(product); // Gọi hàm từ CartContext
+        addToCart(product);
         alert(`${product.name} đã được thêm vào giỏ hàng!`);
     };
 
@@ -33,7 +34,7 @@ const ProductList = () => {
                 <div key={product.id} className="product-card">
                     <h3>{product.name}</h3>
                     <p>Price: {product.price} VND</p>
-                    <button onClick={() => alert("Chi tiết sản phẩm: " + product.name)}>
+                    <button onClick={() => navigate(`/product/${product.id}`)}>
                         Chi tiết
                     </button>
                     <button onClick={() => handleAddToCart(product)}>
