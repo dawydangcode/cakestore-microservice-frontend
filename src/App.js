@@ -1,4 +1,3 @@
-// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
@@ -6,8 +5,9 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/layout/Navbar";
 import Home from "./pages/home/Home";
 import ProductList from "./components/products/ProductList";
-import ProductDetail from "./components/products/ProductDetail"; // Thêm import
+import ProductDetail from "./components/products/ProductDetail";
 import Cart from "./pages/CartPage";
+import Checkout from "./pages/Checkout"; // Thêm import
 import Login from "./components/Login";
 import LogoutButton from "./components/LogoutButton";
 import Admin from "./components/admin/Admin";
@@ -31,8 +31,9 @@ function App() {
                         <Routes>
                             <Route path="/" element={<><Navbar /><Home /></>} />
                             <Route path="/products" element={<><Navbar /><ProductList /></>} />
-                            <Route path="/product/:id" element={<><Navbar /><ProductDetail /></>} /> 
+                            <Route path="/product/:id" element={<><Navbar /><ProductDetail /></>} />
                             <Route path="/cart" element={<PrivateRoute element={<><Navbar /><Cart /></>} />} />
+                            <Route path="/checkout" element={<PrivateRoute element={<><Navbar /><Checkout /></>} />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/admin/*" element={<PrivateRoute element={<AdminLayout />} allowedRole="ROLE_ADMIN" />}>
                                 <Route path="products" element={<Admin />} />
