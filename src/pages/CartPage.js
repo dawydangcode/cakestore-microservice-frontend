@@ -1,13 +1,26 @@
-// src/pages/CartPage.js
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import "./CartPage.css";
 
 const CartPage = () => {
     const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useContext(CartContext);
+    const navigate = useNavigate();
 
     const calculateTotal = () => {
-        return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+        return cart.reduce((total, item) => {
+            const price = item.price || 0;
+            const quantity = item.quantity || 1;
+            return total + price * quantity;
+        }, 0).toFixed(2);
+    };
+
+    const handleCheckout = () => {
+        if (cart.length === 0) {
+            alert("Giỏ hàng của bạn đang trống!");
+            return;
+        }
+        navigate("/checkout");
     };
 
     return (
@@ -29,20 +42,24 @@ const CartPage = () => {
                         </thead>
                         <tbody>
                             {cart.map((item) => (
-                                <tr key={item.productId}>
+                                <tr key={item.id}>
                                     <td>{item.name || "Sản phẩm #" + item.productId}</td>
-                                    <td>{item.price} VND</td>
+                                    <td>{(item.price || 0).toFixed(2)} VND</td>
                                     <td>
-                                        <button 
-                                            onClick={() => decreaseQuantity(item.cartId, item.productId)}
-                                            disabled={item.quantity <= 1}
-                                        >-</button>
-                                        {item.quantity}
-                                        <button onClick={() => increaseQuantity(item.cartId, item.productId)}>+</button>
+                                        <div className="quantity-control">
+                                            <button
+                                                onClick={() => decreaseQuantity(item.cartId, item.productId)}
+                                                disabled={item.quantity <= 1}
+                                            >-</button>
+                                            <span>{item.quantity || 1}</span>
+                                            <button
+                                                onClick={() => increaseQuantity(item.cartId, item.productId)}
+                                            >+</button>
+                                        </div>
                                     </td>
-                                    <td>{(item.price * item.quantity).toFixed(2)} VND</td>
+                                    <td>{((item.price || 0) * (item.quantity || 1)).toFixed(2)} VND</td>
                                     <td>
-                                        <button 
+                                        <button
                                             onClick={() => removeFromCart(item.cartId, item.productId)}
                                             className="remove-btn"
                                         >Xóa</button>
@@ -53,6 +70,7 @@ const CartPage = () => {
                     </table>
                     <div className="cart-total">
                         <h3>Tổng giá: {calculateTotal()} VND</h3>
+                        <button className="checkout-btn" onClick={handleCheckout}>Thanh Toán</button>
                     </div>
                 </>
             )}
