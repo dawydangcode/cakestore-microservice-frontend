@@ -11,6 +11,8 @@ import Checkout from "./pages/Checkout";
 import Login from "./components/Login";
 import LogoutButton from "./components/LogoutButton";
 import Admin from "./components/admin/Admin";
+import AdminOrders from "./components/admin/AdminOrders";
+import AdminCategories from "./components/admin/AdminCategories";
 import AdminLayout from "./components/admin/AdminLayout";
 import { hasRole } from "./auth/authService";
 import OrderList from "./components/orders/OrderList";
@@ -41,6 +43,8 @@ function App() {
                             <Route path="/order/:orderId" element={<PrivateRoute element={<><Navbar /><OrderDetail /></>} />} />
                             <Route path="/admin/*" element={<PrivateRoute element={<AdminLayout />} allowedRole="ROLE_ADMIN" />}>
                                 <Route path="products" element={<Admin />} />
+                                <Route path="orders" element={<AdminOrders />} />
+                                <Route path="categories" element={<AdminCategories />} />
                             </Route>
                         </Routes>
                         {localStorage.getItem("token") && <LogoutButton />}

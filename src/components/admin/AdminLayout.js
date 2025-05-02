@@ -1,4 +1,3 @@
-// src/components/admin/AdminLayout.js
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
 import "./AdminLayout.css";
@@ -11,12 +10,13 @@ const AdminLayout = () => {
                 <nav>
                     <ul>
                         <li><Link to="/admin/products">Quản lý sản phẩm</Link></li>
-                        {/* Thêm các menu khác sau này: users, orders, etc */}
+                        <li><Link to="/admin/orders">Quản lý đơn hàng</Link></li>
+                        <li><Link to="/admin/categories">Quản lý danh mục</Link></li>
                     </ul>
                 </nav>
             </aside>
             <main className="admin-content">
-                <Outlet /> {/* Nội dung các trang con sẽ hiển thị ở đây */}
+                <Outlet />
             </main>
         </div>
     );
