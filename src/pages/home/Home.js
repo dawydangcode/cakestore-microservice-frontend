@@ -26,7 +26,7 @@ const Home = () => {
     return (
         <div className="home">
             <div className="categories-section">
-                <h2>Danh mục</h2>
+                <h2>DANH MỤC</h2>
                 <div className="categories-grid">
                     {categories.map((category) => (
                         <div
@@ -34,12 +34,16 @@ const Home = () => {
                             className="category-card"
                             onClick={() => handleCategoryClick(category.categoryId)}
                         >
-                            <img
-                                src={`https://placehold.co/200x200?text=${category.name}`}
-                                alt={category.name}
-                                className="category-image"
-                            />
-                            <p>{category.name}</p>
+                            <div className="category-image-wrapper">
+                                <img
+                                    src={category.image || "https://placehold.co/200x200?text=" + category.name}
+                                    alt={category.name}
+                                    className="category-image"
+                                />
+                            </div>
+                            <div className="category-label">
+                                {category.name}
+                            </div>
                         </div>
                     ))}
                 </div>

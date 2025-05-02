@@ -4,7 +4,7 @@ import "./AdminCategories.css";
 
 const AdminCategories = () => {
     const [categories, setCategories] = useState([]);
-    const [newCategory, setNewCategory] = useState({ name: "", description: "" });
+    const [newCategory, setNewCategory] = useState({ name: "", description: "", image: null });
     const [editCategory, setEditCategory] = useState(null);
     const [message, setMessage] = useState("");
 
@@ -24,11 +24,19 @@ const AdminCategories = () => {
     const handleAddCategory = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosClient.post("/categories", newCategory, {
-                headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+            const formData = new FormData();
+            formData.append("category", JSON.stringify({ name: newCategory.name, description: newCategory.description }));
+            if (newCategory.image) {
+                formData.append("image", newCategory.image);
+            }
+            const response = await axiosClient.post("/categories", formData, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "multipart/form-data"
+                }
             });
             setMessage(`Đã thêm danh mục "${response.data.name}" thành công!`);
-            setNewCategory({ name: "", description: "" });
+            setNewCategory({ name: "", description: "", image: null });
             fetchCategories();
         } catch (error) {
             setMessage("Lỗi khi thêm danh mục: " + (error.response?.data || error.message));
@@ -38,8 +46,16 @@ const AdminCategories = () => {
     const handleEditCategory = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosClient.put(`/categories/${editCategory.id}`, editCategory, {
-                headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+            const formData = new FormData();
+            formData.append("category", JSON.stringify({ name: editCategory.name, description: editCategory.description }));
+            if (editCategory.image instanceof File) {
+                formData.append("image", editCategory.image);
+            }
+            const response = await axiosClient.put(`/categories/${editCategory.categoryId}`, formData, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "multipart/form-data"
+                }
             });
             setMessage(`Đã cập nhật danh mục "${response.data.name}" thành công!`);
             setEditCategory(null);
@@ -83,6 +99,12 @@ const AdminCategories = () => {
                         onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
                         placeholder="Mô tả"
                     />
+                    <input
+                        type="file"
+                        name="image"
+                        onChange={(e) => setNewCategory({ ...newCategory, image: e.target.files[0] })}
+                        accept="image/*"
+                    />
                     <button type="submit">Thêm</button>
                 </form>
             </div>
@@ -105,6 +127,19 @@ const AdminCategories = () => {
                             onChange={(e) => setEditCategory({ ...editCategory, description: e.target.value })}
                             placeholder="Mô tả"
                         />
+                        <input
+                            type="file"
+                            name="image"
+                            onChange={(e) => setEditCategory({ ...editCategory, image: e.target.files[0] })}
+                            accept="image/*"
+                        />
+                        {editCategory.image && typeof editCategory.image === "string" && (
+                            <img
+                                src={editCategory.image}
+                                alt="Current category"
+                                style={{ width: "100px", height: "100px", marginTop: "10px" }}
+                            />
+                        )}
                         <button type="submit">Cập nhật</button>
                         <button type="button" onClick={() => setEditCategory(null)}>Hủy</button>
                     </form>
@@ -118,6 +153,7 @@ const AdminCategories = () => {
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Hình ảnh</th>
                             <th>Tên</th>
                             <th>Mô tả</th>
                             <th>Hành động</th>
@@ -127,6 +163,17 @@ const AdminCategories = () => {
                         {categories.map((category) => (
                             <tr key={category.categoryId}>
                                 <td>{category.categoryId}</td>
+                                <td>
+                                    {category.image ? (
+                                        <img
+                                            src={category.image}
+                                            alt={category.name}
+                                            style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                                        />
+                                    ) : (
+                                        "Không có hình ảnh"
+                                    )}
+                                </td>
                                 <td>{category.name}</td>
                                 <td>{category.description || "Không có mô tả"}</td>
                                 <td>
