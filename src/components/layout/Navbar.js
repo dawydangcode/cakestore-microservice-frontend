@@ -45,6 +45,7 @@ const Navbar = () => {
                     {isLoggedIn ? (
                         <>
                             <p>👤 {userName}</p>
+                            <Link to="/orders" onClick={() => setMenuOpen(false)}>Tài khoản</Link>
                             <button onClick={handleLogout}>Đăng xuất</button>
                         </>
                     ) : (

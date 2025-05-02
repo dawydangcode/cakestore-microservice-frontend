@@ -36,10 +36,9 @@ const ProductDetail = () => {
             if (!product || !product.categoryId) return;
             try {
                 const response = await axiosClient.get("/products/list");
-                // Chỉ lấy sản phẩm có cùng categoryId, loại bỏ sản phẩm hiện tại
                 const filteredProducts = response.data
                     .filter(p => p.categoryId === product.categoryId && p.id !== parseInt(id))
-                    .slice(0, 4); // Giới hạn tối đa 4 sản phẩm
+                    .slice(0, 4);
                 setRelatedProducts(filteredProducts);
             } catch (error) {
                 console.error("Lỗi khi lấy sản phẩm liên quan:", error);
@@ -72,29 +71,27 @@ const ProductDetail = () => {
     return (
         <div className="product-detail">
             <div className="product-container">
-                {/* Phần hình ảnh sản phẩm */}
                 <div className="product-image-section">
                     <img
-                        src={product.image || "https://placehold.co/200x200"}
+                        src={product.image || "https://placehold.co/300x300"}
                         alt={product.name}
                         className="product-image"
                     />
                     <div className="small-image">
                         <img
-                            src={product.image || "https://placehold.co/200x200"}
+                            src={product.image || "https://placehold.co/80x80"}
                             alt={product.name}
                             className="small-product-image"
                         />
                     </div>
                 </div>
 
-                {/* Phần thông tin sản phẩm */}
                 <div className="product-info-section">
                     <h2>{product.name.toUpperCase()}</h2>
                     <p className="price">{product.price.toLocaleString()}đ</p>
                     <div className="product-details">
                         <p><strong>THƯƠNG HIỆU:</strong> {product.brand || "🍰 Sweet Shop"}</p>
-                        <p><strong>LOẠI:</strong> {product.categoryId}</p>
+                        <p><strong>LOẠI:</strong> {product.category ? product.category.name : "Không xác định"}</p>
                         <p><strong>TÌNH TRẠNG:</strong> {product.stock !== undefined ? `${product.stock} sản phẩm` : "Không có thông tin tồn kho"}</p>
                     </div>
                     <div className="quantity-selector">
@@ -114,7 +111,6 @@ const ProductDetail = () => {
                 </div>
             </div>
 
-            {/* Phần tab thông tin */}
             <div className="tabs-section">
                 <div className="tabs">
                     <button
@@ -157,7 +153,6 @@ const ProductDetail = () => {
                 </div>
             </div>
 
-            {/* Phần sản phẩm liên quan */}
             {relatedProducts.length > 0 && (
                 <div className="related-products-section">
                     <h3>Sản phẩm liên quan</h3>
@@ -165,7 +160,7 @@ const ProductDetail = () => {
                         {relatedProducts.map((relatedProduct) => (
                             <div key={relatedProduct.id} className="related-product-card">
                                 <img
-                                    src={relatedProduct.image || "  https://placehold.co/200x200"}
+                                    src={relatedProduct.image || "https://placehold.co/200x200"}
                                     alt={relatedProduct.name}
                                     className="related-product-image"
                                 />

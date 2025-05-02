@@ -77,11 +77,10 @@ const Checkout = () => {
             const response = await axiosClient.post("/orders/create", orderRequest);
             console.log("Order created:", response.data);
 
-            // Đồng bộ giỏ hàng (sẽ được xóa bởi order-service nếu thanh toán thành công)
             await syncCartWithBackend();
 
             alert("Đơn hàng đã được tạo thành công!");
-            navigate("/cart"); // Quay lại trang giỏ hàng
+            navigate("/cart");
         } catch (error) {
             console.error("Failed to create order:", error.response?.data || error.message);
             alert("Lỗi khi tạo đơn hàng: " + (error.response?.data?.message || error.message));
@@ -167,18 +166,33 @@ const Checkout = () => {
                     <h2>Thông tin đơn hàng</h2>
                     <div className="order-items">
                         <p>Các món giao ngay ({cart.length})</p>
-                        <div className="order-total">
-                            <span>Tổng đơn:</span>
-                            <span>{calculateTotal()} đ</span>
-                        </div>
-                        <div className="order-total">
-                            <span>Phí vận chuyển:</span>
-                            <span>0 đ</span>
-                        </div>
-                        <div className="order-total">
-                            <span>Bạn được giảm:</span>
-                            <span>0 đ</span>
-                        </div>
+                        {cart.map((item) => (
+                            <div key={item.id} className="order-item">
+                                <img
+                                    src={item.image || "https://placehold.co/80x80"}
+                                    alt={item.name}
+                                    className="order-item-image"
+                                />
+                                <div className="order-item-details">
+                                    <p>{item.name || "Sản phẩm #" + item.productId}</p>
+                                    <p>Số lượng: {item.quantity || 1}</p>
+                                    <p>Giá: {(item.price || 0).toFixed(0)} đ</p>
+                                    <p>Tổng: {((item.price || 0) * (item.quantity || 1)).toFixed(0)} đ</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="order-total">
+                        <span>Tổng đơn:</span>
+                        <span>{calculateTotal()} đ</span>
+                    </div>
+                    <div className="order-total">
+                        <span>Phí vận chuyển:</span>
+                        <span>0 đ</span>
+                    </div>
+                    <div className="order-total">
+                        <span>Bạn được giảm:</span>
+                        <span>0 đ</span>
                     </div>
                     <div className="order-total final">
                         <span>Tổng tiền thanh toán:</span>

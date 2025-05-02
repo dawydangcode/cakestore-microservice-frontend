@@ -33,6 +33,7 @@ const CartPage = () => {
                     <table className="cart-table">
                         <thead>
                             <tr>
+                                <th>Hình ảnh</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Giá</th>
                                 <th>Số lượng</th>
@@ -43,6 +44,13 @@ const CartPage = () => {
                         <tbody>
                             {cart.map((item) => (
                                 <tr key={item.id}>
+                                    <td>
+                                        <img
+                                            src={item.image || "https://placehold.co/80x80"}
+                                            alt={item.name}
+                                            className="cart-item-image"
+                                        />
+                                    </td>
                                     <td>{item.name || "Sản phẩm #" + item.productId}</td>
                                     <td>{(item.price || 0).toFixed(2)} VND</td>
                                     <td>

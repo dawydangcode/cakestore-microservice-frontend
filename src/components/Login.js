@@ -14,11 +14,10 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { token, roles, cartItems } = await login(username, password); // Lấy roles
-            setAuth(token, localStorage.getItem("userName")); // Cập nhật AuthContext
-            await syncCartWithBackend(); // Đồng bộ giỏ hàng từ back-end
+            const { token, roles, cartItems } = await login(username, password);
+            setAuth(token, localStorage.getItem("userName"));
+            await syncCartWithBackend();
 
-            // Kiểm tra vai trò và điều hướng
             if (roles.includes("ROLE_ADMIN")) {
                 navigate("/admin");
             } else {
@@ -29,21 +28,71 @@ const Login = () => {
         }
     };
 
+    // Nội bộ CSS style object
+    const styles = {
+        form: {
+            maxWidth: "360px",
+            margin: "100px auto",
+            padding: "32px",
+            borderRadius: "12px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+            backgroundColor: "#fff",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            fontFamily: "Arial, sans-serif",
+        },
+        title: {
+            textAlign: "center",
+            color: "#333",
+            marginBottom: "12px",
+        },
+        input: {
+            padding: "12px",
+            fontSize: "16px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+        },
+        button: {
+            padding: "12px",
+            backgroundColor: "#4CAF50",
+            color: "#fff",
+            fontWeight: "bold",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease",
+        }
+    };
+
     return (
-        <form onSubmit={handleSubmit}>
+       
+        <form style={styles.form} onSubmit={handleSubmit}>
+            <h2 style={styles.title}>Đăng nhập</h2>
             <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
+                placeholder="Tên đăng nhập"
+                required
+                style={styles.input}
             />
             <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder="Mật khẩu"
+                required
+                style={styles.input}
             />
-            <button type="submit">Đăng nhập</button>
+            <button
+                type="submit"
+                style={styles.button}
+                onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
+                onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
+            >
+                Đăng nhập
+            </button>
         </form>
     );
 };

@@ -1,6 +1,8 @@
-/* src/components/admin/Admin.css */
 .admin-section {
-    margin-bottom: 30px;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
 }
 
 .admin-form {
@@ -10,28 +12,36 @@
     max-width: 500px;
 }
 
-.admin-form input, .admin-form textarea {
+.admin-form select,
+.admin-form input,
+.admin-form textarea {
     padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.admin-form textarea {
+    height: 100px;
+    resize: none;
 }
 
 .admin-form button {
     padding: 10px;
-    background-color: #28a745;
+    background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
 }
 
 .admin-form button:hover {
-    background-color: #218838;
+    background-color: #0056b3;
 }
 
 .product-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
 }
 
 .product-table th, .product-table td {
@@ -44,9 +54,16 @@
     background-color: #f2f2f2;
 }
 
+.product-table-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
 .product-table button {
-    margin-right: 5px;
     padding: 5px 10px;
+    margin: 0 5px;
     background-color: #007bff;
     color: white;
     border: none;
@@ -54,14 +71,10 @@
     cursor: pointer;
 }
 
-.product-table button:hover {
-    background-color: #0056b3;
-}
-
 .product-table button:nth-child(2) {
     background-color: #dc3545;
 }
 
-.product-table button:nth-child(2):hover {
-    background-color: #c82333;
+.product-table button:hover {
+    opacity: 0.9;
 }

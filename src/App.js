@@ -7,12 +7,14 @@ import Home from "./pages/home/Home";
 import ProductList from "./components/products/ProductList";
 import ProductDetail from "./components/products/ProductDetail";
 import Cart from "./pages/CartPage";
-import Checkout from "./pages/Checkout"; // Thêm import
+import Checkout from "./pages/Checkout";
 import Login from "./components/Login";
 import LogoutButton from "./components/LogoutButton";
 import Admin from "./components/admin/Admin";
 import AdminLayout from "./components/admin/AdminLayout";
 import { hasRole } from "./auth/authService";
+import OrderList from "./components/orders/OrderList";
+import OrderDetail from "./components/orders/OrderDetail";
 import "./App.css";
 
 const PrivateRoute = ({ element, allowedRole }) => {
@@ -35,6 +37,8 @@ function App() {
                             <Route path="/cart" element={<PrivateRoute element={<><Navbar /><Cart /></>} />} />
                             <Route path="/checkout" element={<PrivateRoute element={<><Navbar /><Checkout /></>} />} />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/orders" element={<PrivateRoute element={<><Navbar /><OrderList /></>} />} />
+                            <Route path="/order/:orderId" element={<PrivateRoute element={<><Navbar /><OrderDetail /></>} />} />
                             <Route path="/admin/*" element={<PrivateRoute element={<AdminLayout />} allowedRole="ROLE_ADMIN" />}>
                                 <Route path="products" element={<Admin />} />
                             </Route>

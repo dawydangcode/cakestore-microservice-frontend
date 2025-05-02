@@ -19,6 +19,7 @@
     max-width: 300px;
     height: auto;
     border-radius: 8px;
+    object-fit: cover;
 }
 
 .small-image {
@@ -29,6 +30,7 @@
     width: 80px;
     height: 80px;
     border-radius: 5px;
+    object-fit: cover;
 }
 
 .product-info-section {
@@ -64,7 +66,6 @@
     align-items: center;
     gap: 10px;
     margin-left: 175px;
-
 }
 
 .quantity-controls {
@@ -120,7 +121,6 @@
     border-radius: 5px;
 }
 
-/* Tabs */
 .tabs-section {
     margin-top: 30px;
 }
@@ -153,7 +153,6 @@
     margin-top: 10px;
 }
 
-/* Related Products */
 .related-products-section {
     margin-top: 30px;
 }
