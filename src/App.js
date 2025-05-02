@@ -35,6 +35,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<><Navbar /><Home /></>} />
                             <Route path="/products" element={<><Navbar /><ProductList /></>} />
+                            <Route path="/products/category/:categoryId" element={<><Navbar /><ProductList /></>} />
                             <Route path="/product/:id" element={<><Navbar /><ProductDetail /></>} />
                             <Route path="/cart" element={<PrivateRoute element={<><Navbar /><Cart /></>} />} />
                             <Route path="/checkout" element={<PrivateRoute element={<><Navbar /><Checkout /></>} />} />

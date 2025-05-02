@@ -25,7 +25,6 @@ const CartPage = () => {
 
     return (
         <div className="cart-page">
-            <h1>Your Shopping Cart 🛍️</h1>
             {cart.length === 0 ? (
                 <p>Giỏ hàng của bạn đang trống.</p>
             ) : (
