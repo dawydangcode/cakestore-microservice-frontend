@@ -46,12 +46,12 @@ const CartPage = () => {
                                     <td>
                                         <img
                                             src={item.image || "https://placehold.co/80x80"}
-                                            alt={item.name}
+                                            alt={item.name || "Sản phẩm #" + item.productId}
                                             className="cart-item-image"
                                         />
                                     </td>
                                     <td>{item.name || "Sản phẩm #" + item.productId}</td>
-                                    <td>{(item.price || 0).toFixed(2)} VND</td>
+                                    <td>{(item.price || 0).toLocaleString()} VND</td>
                                     <td>
                                         <div className="quantity-control">
                                             <button
@@ -64,7 +64,7 @@ const CartPage = () => {
                                             >+</button>
                                         </div>
                                     </td>
-                                    <td>{((item.price || 0) * (item.quantity || 1)).toFixed(2)} VND</td>
+                                    <td>{((item.price || 0) * (item.quantity || 1)).toLocaleString()} VND</td>
                                     <td>
                                         <button
                                             onClick={() => removeFromCart(item.cartId, item.productId)}
