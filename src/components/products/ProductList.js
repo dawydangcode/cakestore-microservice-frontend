@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../../api/axiosClient";
 import { CartContext } from "../../context/CartContext";
 import "./ProductList.css";
+import AddToCartModal from "./AddToCartModal";
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -10,6 +11,8 @@ const ProductList = () => {
     const { addToCart } = useContext(CartContext);
     const navigate = useNavigate();
     const { categoryId } = useParams();
+    const [showModal, setShowModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,7 +36,9 @@ const ProductList = () => {
 
     const handleAddToCart = (product) => {
         addToCart(product);
-        alert(`${product.name} đã được thêm vào giỏ hàng!`);
+        setSelectedProduct(product);
+        setShowModal(true);
+        setTimeout(() => setShowModal(false), 3000); // Tắt modal sau 3 giây
     };
 
     const handleCategoryClick = (categoryId) => {
@@ -42,6 +47,10 @@ const ProductList = () => {
         } else {
             navigate("/products");
         }
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
     };
 
     return (
@@ -85,6 +94,10 @@ const ProductList = () => {
                     </div>
                 ))}
             </div>
+
+            {showModal && selectedProduct && (
+                <AddToCartModal product={selectedProduct} onClose={handleModalClose} />
+            )}
         </div>
     );
 };

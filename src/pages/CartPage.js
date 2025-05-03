@@ -7,12 +7,17 @@ const CartPage = () => {
     const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useContext(CartContext);
     const navigate = useNavigate();
 
+    const formatPrice = (price) => {
+        return price.toLocaleString("vi-VN");
+    };
+
     const calculateTotal = () => {
-        return cart.reduce((total, item) => {
+        const total = cart.reduce((total, item) => {
             const price = item.price || 0;
             const quantity = item.quantity || 1;
             return total + price * quantity;
-        }, 0).toFixed(2);
+        }, 0);
+        return formatPrice(total);
     };
 
     const handleCheckout = () => {
@@ -51,7 +56,7 @@ const CartPage = () => {
                                         />
                                     </td>
                                     <td>{item.name || "Sản phẩm #" + item.productId}</td>
-                                    <td>{(item.price || 0).toLocaleString()} VND</td>
+                                    <td>{formatPrice(item.price || 0)} VND</td>
                                     <td>
                                         <div className="quantity-control">
                                             <button
@@ -64,7 +69,7 @@ const CartPage = () => {
                                             >+</button>
                                         </div>
                                     </td>
-                                    <td>{((item.price || 0) * (item.quantity || 1)).toLocaleString()} VND</td>
+                                    <td>{formatPrice((item.price || 0) * (item.quantity || 1))} VND</td>
                                     <td>
                                         <button
                                             onClick={() => removeFromCart(item.cartId, item.productId)}
