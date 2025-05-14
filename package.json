@@ -8,6 +8,7 @@
     "@reduxjs/toolkit": "^2.5.1",
     "axios": "^1.7.9",
     "cakestore-microservice-frontend": "file:",
+    "chart.js": "^4.4.9",
     "cra-template": "1.2.0",
     "lucide-react": "^0.507.0",
     "react": "^18.2.0",

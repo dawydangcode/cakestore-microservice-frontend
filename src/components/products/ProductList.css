@@ -46,6 +46,16 @@
     margin-bottom: 10px;
 }
 
+.product-image-wrapper {
+    width: 100%;
+    height: 200px; /* Chiều cao cố định cho hình ảnh */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
 button {
     margin: 5px;
     padding: 8px;

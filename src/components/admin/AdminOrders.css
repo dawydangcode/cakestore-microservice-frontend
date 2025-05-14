@@ -180,7 +180,7 @@
     white-space: nowrap;
 }
 
-.btn-edit, .btn-save, .btn-cancel {
+.btn-edit, .btn-save, .btn-cancel, .btn-view {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -208,6 +208,11 @@
     color: white;
 }
 
+.btn-view {
+    background-color: #17a2b8;
+    color: white;
+}
+
 .btn-edit:hover {
     background-color: #e0e0e0;
 }
@@ -218,6 +223,10 @@
 
 .btn-cancel:hover {
     background-color: #c82333;
+}
+
+.btn-view:hover {
+    background-color: #138496;
 }
 
 /* Price column */
@@ -256,6 +265,106 @@
     color: #666;
 }
 
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.modal-close:hover {
+    background-color: #f0f0f0;
+}
+
+.modal-body {
+    padding: 20px;
+    color: #333;
+}
+
+.modal-body h3 {
+    margin-top: 0;
+    font-size: 16px;
+    color: #444;
+}
+
+.order-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.order-details-table th,
+.order-details-table td {
+    padding: 10px;
+    border: 1px solid #eee;
+    text-align: left;
+}
+
+.order-details-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.btn-close {
+    padding: 8px 16px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-close:hover {
+    background-color: #c82333;
+}
+
 /* Animations */
 @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -280,8 +389,12 @@
         font-size: 13px;
     }
     
-    .btn-edit, .btn-save, .btn-cancel {
+    .btn-edit, .btn-save, .btn-cancel, .btn-view {
         width: 28px;
         height: 28px;
+    }
+
+    .modal-content {
+        width: 95%;
     }
 }

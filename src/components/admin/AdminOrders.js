@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../../api/axiosClient";
 import "./AdminOrders.css";
-import { AlertCircle, Check, X, Edit2, Save, RefreshCw } from "lucide-react";
+import { AlertCircle, Check, X, Edit2, Save, RefreshCw, Eye } from "lucide-react";
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -9,6 +9,8 @@ const AdminOrders = () => {
     const [messageType, setMessageType] = useState(""); // success, error
     const [editingOrder, setEditingOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showDetails, setShowDetails] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
         fetchOrders();
@@ -38,8 +40,7 @@ const AdminOrders = () => {
             setMessage(`Cập nhật trạng thái đơn hàng #${orderId} thành công!`);
             fetchOrders();
             setEditingOrder(null);
-            
-            // Auto hide success message after 3 seconds
+
             setTimeout(() => {
                 if (messageType === "success") {
                     setMessage("");
@@ -82,6 +83,16 @@ const AdminOrders = () => {
             minute: '2-digit'
         };
         return new Date(dateString).toLocaleDateString('vi-VN', options);
+    };
+
+    const handleViewDetails = (order) => {
+        setSelectedOrder(order);
+        setShowDetails(true);
+    };
+
+    const handleCloseDetails = () => {
+        setShowDetails(false);
+        setSelectedOrder(null);
     };
 
     return (
@@ -134,6 +145,7 @@ const AdminOrders = () => {
                                         <th>Trạng thái</th>
                                         <th>Phương thức thanh toán</th>
                                         <th>Ngày tạo</th>
+                                        <th>Chi tiết</th>
                                         <th>Hành động</th>
                                     </tr>
                                 </thead>
@@ -162,6 +174,15 @@ const AdminOrders = () => {
                                             </td>
                                             <td>{order.paymentMethod || "Không xác định"}</td>
                                             <td>{formatDate(order.createdAt)}</td>
+                                            <td className="action-column">
+                                                <button
+                                                    className="btn-view"
+                                                    onClick={() => handleViewDetails(order)}
+                                                    title="Xem chi tiết"
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
+                                            </td>
                                             <td className="action-column">
                                                 {editingOrder && editingOrder.id === order.id ? (
                                                     <>
@@ -198,6 +219,65 @@ const AdminOrders = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modal chi tiết đơn hàng */}
+            {showDetails && selectedOrder && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h2>Chi tiết đơn hàng #{selectedOrder.id}</h2>
+                            <button className="modal-close" onClick={handleCloseDetails}>
+                                <X size={16} />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p><strong>Khách hàng:</strong> {selectedOrder.fullName}</p>
+                            <p><strong>Tổng tiền:</strong> {selectedOrder.totalPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
+                            <p><strong>Phương thức thanh toán:</strong> {selectedOrder.paymentMethod || "Không xác định"}</p>
+                            <p><strong>Ngày tạo:</strong> {formatDate(selectedOrder.createdAt)}</p>
+                            <p><strong>Trạng thái:</strong> <span className={`status-badge ${getStatusBadgeClass(selectedOrder.status)}`}>{selectedOrder.status}</span></p>
+                            <h3>Sản phẩm trong đơn hàng</h3>
+                            {selectedOrder.orderItems && selectedOrder.orderItems.length > 0 ? (
+                                <table className="order-details-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Hình ảnh</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Số lượng</th>
+                                            <th>Giá</th>
+                                            <th>Tổng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {selectedOrder.orderItems.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>
+                                                    <img
+                                                        src={item.image || "https://placehold.co/50x50"}
+                                                        alt={item.productName || "Sản phẩm"}
+                                                        className="product-image"
+                                                    />
+                                                </td>
+                                                <td>{item.productName || "Không xác định"}</td>
+                                                <td>{item.quantity}</td>
+                                                <td>{item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                                                <td>{(item.quantity * item.price).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p>Không có sản phẩm nào trong đơn hàng này.</p>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn-close" onClick={handleCloseDetails}>
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
