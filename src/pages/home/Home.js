@@ -23,24 +23,30 @@ const Home = () => {
         navigate(`/products/category/${categoryId}`);
     };
 
+    // Determine the grid class based on the number of categories
+    const getGridClass = () => {
+        if (categories.length === 3) return "categories-grid categories-grid-3";
+        if (categories.length === 4) return "categories-grid categories-grid-4";
+        if (categories.length === 5) return "categories-grid categories-grid-5";
+        return "categories-grid";
+    };
+
     return (
         <div className="home">
             <div className="categories-section">
                 <h2>DANH MỤC</h2>
-                <div className="categories-grid">
+                <div className={getGridClass()}>
                     {categories.map((category) => (
                         <div
                             key={category.categoryId}
                             className="category-card"
                             onClick={() => handleCategoryClick(category.categoryId)}
                         >
-                            <div className="category-image-wrapper">
-                                <img
-                                    src={category.image || "https://placehold.co/200x200?text=" + category.name}
-                                    alt={category.name}
-                                    className="category-image"
-                                />
-                            </div>
+                            <img
+                                src={category.image || "https://placehold.co/200x200?text=" + category.name}
+                                alt={category.name}
+                                className="category-image"
+                            />
                             <div className="category-label">
                                 {category.name}
                             </div>

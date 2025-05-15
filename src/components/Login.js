@@ -3,19 +3,33 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
 import { login } from "../auth/authService";
+import "./Login.css";
 
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState({});
+    const [serverError, setServerError] = useState("");
     const { login: setAuth } = useContext(AuthContext);
     const { syncCartWithBackend } = useContext(CartContext);
     const navigate = useNavigate();
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!username) newErrors.username = "Tên đăng nhập là bắt buộc";
+        if (!password) newErrors.password = "Mật khẩu là bắt buộc";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerError("");
+        if (!validateForm()) return;
+
         try {
             const { token, roles, cartItems } = await login(username, password);
-            setAuth(token, localStorage.getItem("userName"));
+            setAuth(token, username);
             await syncCartWithBackend();
 
             if (roles.includes("ROLE_ADMIN")) {
@@ -24,76 +38,70 @@ const Login = () => {
                 navigate("/");
             }
         } catch (error) {
-            alert("Đăng nhập thất bại!");
+            console.error("Login failed:", error);
+            setServerError("Đăng nhập thất bại! Tên đăng nhập hoặc mật khẩu không đúng.");
         }
     };
 
-    // Nội bộ CSS style object
-    const styles = {
-        form: {
-            maxWidth: "360px",
-            margin: "100px auto",
-            padding: "32px",
-            borderRadius: "12px",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
-            backgroundColor: "#fff",
-            display: "flex",
-            flexDirection: "column",
-            gap: "16px",
-            fontFamily: "Arial, sans-serif",
-        },
-        title: {
-            textAlign: "center",
-            color: "#333",
-            marginBottom: "12px",
-        },
-        input: {
-            padding: "12px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-        },
-        button: {
-            padding: "12px",
-            backgroundColor: "#4CAF50",
-            color: "#fff",
-            fontWeight: "bold",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            transition: "background-color 0.3s ease",
-        }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        if (name === "username") setUsername(value);
+        if (name === "password") setPassword(value);
+        setServerError("");
     };
 
     return (
-       
-        <form style={styles.form} onSubmit={handleSubmit}>
-            <h2 style={styles.title}>Đăng nhập</h2>
-            <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Tên đăng nhập"
-                required
-                style={styles.input}
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mật khẩu"
-                required
-                style={styles.input}
-            />
-            <button
-                type="submit"
-                style={styles.button}
-                onMouseOver={(e) => (e.target.style.backgroundColor = "#45a049")}
-                onMouseOut={(e) => (e.target.style.backgroundColor = "#4CAF50")}
-            >
-                Đăng nhập
-            </button>
-        </form>
+        <div className="login-page">
+            <div className="login-header">
+                <h1>Đăng Nhập</h1>
+            </div>
+
+            <div className="login-container">
+                <div className="login-form">
+                    <h2>Thông Tin Đăng Nhập</h2>
+                    {serverError && <div className="server-error">{serverError}</div>}
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <div className="floating-label-input">
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value={username}
+                                    onChange={handleInputChange}
+                                    placeholder=" "
+                                    required
+                                />
+                                <span className="floating-label">Tên đăng nhập *</span>
+                            </div>
+                            {errors.username && <span className="error">{errors.username}</span>}
+                        </div>
+
+                        <div className="form-group">
+                            <div className="floating-label-input">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={password}
+                                    onChange={handleInputChange}
+                                    placeholder=" "
+                                    required
+                                />
+                                <span className="floating-label">Mật khẩu *</span>
+                            </div>
+                            {errors.password && <span className="error">{errors.password}</span>}
+                        </div>
+
+                        <button className="login-btn" type="submit">
+                            Đăng Nhập
+                        </button>
+                    </form>
+                    <div className="links">
+                        <p>Chưa có tài khoản? <a href="/signup">Đăng ký</a></p>
+                        <p><a href="/forgot-password">Quên mật khẩu?</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 

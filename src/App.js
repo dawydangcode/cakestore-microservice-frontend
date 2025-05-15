@@ -18,6 +18,8 @@ import AdminLayout from "./components/admin/AdminLayout";
 import { hasRole } from "./auth/authService";
 import OrderList from "./components/orders/OrderList";
 import OrderDetail from "./components/orders/OrderDetail";
+import SignUp from "./components/SignUp";
+import ForgotPassword from "./components/ForgotPassword";
 import "./App.css";
 
 const PrivateRoute = ({ element, allowedRole }) => {
@@ -40,7 +42,9 @@ function App() {
                             <Route path="/product/:id" element={<><Navbar /><ProductDetail /></>} />
                             <Route path="/cart" element={<PrivateRoute element={<><Navbar /><Cart /></>} />} />
                             <Route path="/checkout" element={<PrivateRoute element={<><Navbar /><Checkout /></>} />} />
-                            <Route path="/login" element={<Login />} />
+                            <Route path="/login" element={<><Navbar /><Login /></>} />
+                            <Route path="/signup" element={<><Navbar /><SignUp /></>} />
+                            <Route path="/forgot-password" element={<><Navbar /><ForgotPassword /></>} />
                             <Route path="/orders" element={<PrivateRoute element={<><Navbar /><OrderList /></>} />} />
                             <Route path="/order/:orderId" element={<PrivateRoute element={<><Navbar /><OrderDetail /></>} />} />
                             <Route path="/admin/*" element={<PrivateRoute element={<AdminLayout />} allowedRole="ROLE_ADMIN" />}>

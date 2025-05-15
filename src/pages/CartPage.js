@@ -81,7 +81,7 @@ const CartPage = () => {
                         </tbody>
                     </table>
                     <div className="cart-total">
-                        <h3>Tổng giá: {calculateTotal()} VND</h3>
+                        <h3>Tổng giá: {calculateTotal()} đ</h3>
                         <button className="checkout-btn" onClick={handleCheckout}>Thanh Toán</button>
                     </div>
                 </>

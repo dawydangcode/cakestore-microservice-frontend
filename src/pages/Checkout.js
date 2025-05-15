@@ -28,12 +28,16 @@ const Checkout = () => {
 
     const [errors, setErrors] = useState({});
 
+    const formatPrice = (price) => {
+        return price.toLocaleString("vi-VN");
+    };
+
     const calculateTotal = () => {
         return cart.reduce((total, item) => {
             const price = item.price || 0;
             const quantity = item.quantity || 1;
             return total + price * quantity;
-        }, 0).toFixed(0);
+        }, 0);
     };
 
     const validateForm = () => {
@@ -89,138 +93,171 @@ const Checkout = () => {
 
     return (
         <div className="checkout-page">
-            <h1>Thanh toán</h1>
+            <div className="checkout-header">
+                <h1>Thanh Toán Đơn Hàng</h1>
+            </div>
+            
             <div className="checkout-container">
                 <div className="checkout-form">
-                    <h2>Vui lòng cung cấp thông tin của bạn</h2>
+                    <h2>Thông Tin Giao Hàng</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label>Họ và tên *</label>
-                            <input
-                                type="text"
-                                name="fullName"
-                                value={formData.fullName}
-                                onChange={handleInputChange}
-                                placeholder="Họ và tên"
-                            />
+                            <div className="floating-label-input">
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    value={formData.fullName}
+                                    onChange={handleInputChange}
+                                    placeholder=" "
+                                    required
+                                />
+                                <span className="floating-label">Họ và tên *</span>
+                            </div>
                             {errors.fullName && <span className="error">{errors.fullName}</span>}
                         </div>
+                        
                         <div className="form-group">
-                            <label>Điện thoại *</label>
-                            <input
-                                type="text"
-                                name="phoneNumber"
-                                value={formData.phoneNumber}
-                                onChange={handleInputChange}
-                                placeholder="Điện thoại"
-                            />
+                            <div className="floating-label-input">
+                                <input
+                                    type="text"
+                                    name="phoneNumber"
+                                    value={formData.phoneNumber}
+                                    onChange={handleInputChange}
+                                    placeholder=" "
+                                    required
+                                />
+                                <span className="floating-label">Điện thoại *</span>
+                            </div>
                             {errors.phoneNumber && <span className="error">{errors.phoneNumber}</span>}
                         </div>
+                        
                         <div className="form-group">
-                            <label>Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                placeholder="Email"
-                            />
+                            <div className="floating-label-input">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder=" "
+                                />
+                                <span className="floating-label">Email</span>
+                            </div>
                         </div>
+                        
                         <div className="form-group">
-                            <label>Quận/Huyện *</label>
-                            <select
-                                name="district"
-                                value={formData.district}
-                                onChange={handleInputChange}
-                            >
-                                <option value="">Chọn Quận/Huyện</option>
-                                {districts.map((district, index) => (
-                                    <option key={index} value={district}>{district}</option>
-                                ))}
-                            </select>
+                            <div className="floating-label-input">
+                                <select
+                                    name="district"
+                                    value={formData.district}
+                                    onChange={handleInputChange}
+                                    className={formData.district ? "has-value" : ""}
+                                    required
+                                >
+                                    <option value="" disabled>Chọn Quận/Huyện *</option>
+                                    {districts.map((district, index) => (
+                                        <option key={index} value={district}>{district}</option>
+                                    ))}
+                                </select>
+                                <span className="floating-label">Quận/Huyện *</span>
+                            </div>
                             {errors.district && <span className="error">{errors.district}</span>}
                         </div>
+                        
                         <div className="form-group">
-                            <label>Số nhà, tên đường, phường/xã *</label>
-                            <input
-                                type="text"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                                placeholder="Địa chỉ chi tiết"
-                            />
+                            <div className="floating-label-input">
+                                <input
+                                    type="text"
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleInputChange}
+                                    placeholder=" "
+                                    required
+                                />
+                                <span className="floating-label">Địa chỉ chi tiết *</span>
+                            </div>
                             {errors.address && <span className="error">{errors.address}</span>}
-                        </div>
-                        <div className="form-group">
-                            <label>Nguồn nhắn khác (Nếu có)</label>
-                            <textarea
-                                name="note"
-                                value={formData.note}
-                                onChange={handleInputChange}
-                                placeholder="Ghi chú về đơn hàng, ví dụ: giờ giao hàng"
-                            />
                         </div>
                     </form>
                 </div>
+                
                 <div className="order-summary">
-                    <h2>Thông tin đơn hàng</h2>
+                    <h2>Thông Tin Đơn Hàng</h2>
                     <div className="order-items">
-                        <p>Các món giao ngay ({cart.length})</p>
-                        {cart.map((item) => (
-                            <div key={item.id} className="order-item">
+                        <p>Sản phẩm ({cart.length})</p>
+                        {cart.map((item, index) => (
+                            <div key={index} className="order-item">
                                 <img
-                                    src={item.image || "https://placehold.co/80x80"}
+                                    src={item.image || "https://placehold.co/90x90"}
                                     alt={item.name}
                                     className="order-item-image"
                                 />
                                 <div className="order-item-details">
                                     <p>{item.name || "Sản phẩm #" + item.productId}</p>
                                     <p>Số lượng: {item.quantity || 1}</p>
-                                    <p>Giá: {(item.price || 0).toFixed(0)} đ</p>
-                                    <p>Tổng: {((item.price || 0) * (item.quantity || 1)).toFixed(0)} đ</p>
+                                    <p>Giá: {formatPrice(item.price || 0)} đ</p>
+                                    <p>Tổng: {formatPrice((item.price || 0) * (item.quantity || 1))} đ</p>
                                 </div>
                             </div>
                         ))}
                     </div>
+                    
                     <div className="order-total">
-                        <span>Tổng đơn:</span>
-                        <span>{calculateTotal()} đ</span>
+                        <span>Tạm tính:</span>
+                        <span>{formatPrice(calculateTotal())} đ</span>
                     </div>
+                    
                     <div className="order-total">
                         <span>Phí vận chuyển:</span>
                         <span>0 đ</span>
                     </div>
+                    
                     <div className="order-total">
-                        <span>Bạn được giảm:</span>
+                        <span>Giảm giá:</span>
                         <span>0 đ</span>
                     </div>
+                    
                     <div className="order-total final">
-                        <span>Tổng tiền thanh toán:</span>
-                        <span>{calculateTotal()} đ</span>
+                        <span>Tổng thanh toán:</span>
+                        <span>{formatPrice(calculateTotal())} đ</span>
                     </div>
+                    
                     <div className="payment-methods">
-                        <label>
+                        <h3>Phương thức thanh toán</h3>
+                        
+                        <div 
+                            className={`payment-option ${formData.paymentMethod === "COD" ? "selected" : ""}`}
+                            onClick={() => handlePaymentMethodChange("COD")}
+                        >
                             <input
                                 type="radio"
                                 name="paymentMethod"
                                 value="COD"
                                 checked={formData.paymentMethod === "COD"}
                                 onChange={() => handlePaymentMethodChange("COD")}
+                                id="cod-payment"
                             />
-                            Thanh toán khi nhận hàng
-                        </label>
-                        <label>
+                            <label htmlFor="cod-payment">Thanh toán khi nhận hàng (COD)</label>
+                        </div>
+                        
+                        <div 
+                            className={`payment-option ${formData.paymentMethod === "BANK" ? "selected" : ""}`}
+                            onClick={() => handlePaymentMethodChange("BANK")}
+                        >
                             <input
                                 type="radio"
                                 name="paymentMethod"
                                 value="BANK"
                                 checked={formData.paymentMethod === "BANK"}
                                 onChange={() => handlePaymentMethodChange("BANK")}
+                                id="bank-payment"
                             />
-                            Chuyển khoản qua ngân hàng
-                        </label>
+                            <label htmlFor="bank-payment">Chuyển khoản ngân hàng</label>
+                        </div>
                     </div>
-                    <button className="confirm-btn" onClick={handleSubmit}>Thanh toán</button>
+                    
+                    <button className="confirm-btn" onClick={handleSubmit}>
+                        Hoàn tất đơn hàng
+                    </button>
                 </div>
             </div>
         </div>
