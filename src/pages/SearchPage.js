@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import axios from "axios";
-import "./SearchPage.css"; // Tạo file CSS riêng
+import React, { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import axiosClient from "../../src/api/axiosClient"; // Sử dụng axiosClient
+import { CartContext } from "../../src/context/CartContext";
+import "./SearchPage.css";
+import debounce from "lodash/debounce";
 
 const SearchPage = () => {
     const [searchParams] = useSearchParams();
@@ -9,22 +11,31 @@ const SearchPage = () => {
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 9;
+    const { addToCart } = React.useContext(CartContext);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchSearchResults = async () => {
+    const fetchSearchResults = useCallback(
+        debounce(async (searchQuery) => {
+            console.log("Fetching search results for query:", searchQuery);
             try {
-                const response = await axios.get(`http://localhost:8080/products/search?keyword=${query}`);
+                const response = await axiosClient.get(`/products/search?keyword=${searchQuery}`);
                 setProducts(response.data);
-                setCurrentPage(1); // Reset về trang 1 khi thay đổi query
+                setCurrentPage(1);
             } catch (error) {
                 console.error("Error fetching search results:", error);
                 setProducts([]);
             }
-        };
-        if (query) fetchSearchResults();
-    }, [query]);
+        }, 500),
+        []
+    );
 
-    // Phân trang
+    useEffect(() => {
+        if (query) {
+            fetchSearchResults(query);
+        }
+        return () => fetchSearchResults.cancel();
+    }, [query, fetchSearchResults]);
+
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
     const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -32,15 +43,25 @@ const SearchPage = () => {
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
-        window.scrollTo(0, 0); // Cuộn lên đầu trang
+        window.scrollTo(0, 0);
     };
 
     const handlePreviousPage = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+            window.scrollTo(0, 0);
+        }
     };
 
     const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+            window.scrollTo(0, 0);
+        }
+    };
+
+    const handleAddToCart = (product) => {
+        addToCart(product);
     };
 
     const pageNumbers = [];
@@ -65,10 +86,12 @@ const SearchPage = () => {
                                     <div className="search-result-details">
                                         <h3>{product.name}</h3>
                                         <p>{product.price.toLocaleString()} đ</p>
-                                        <button onClick={() => window.location.href = `/product/${product.id}`}>
+                                        <button onClick={() => navigate(`/product/${product.id}`)}>
                                             Chi tiết
                                         </button>
-                                        <button>Thêm vào giỏ hàng</button> {/* Cần tích hợp CartContext nếu muốn chức năng này */}
+                                        <button onClick={() => handleAddToCart(product)}>
+                                            Thêm vào giỏ hàng
+                                        </button>
                                     </div>
                                 </div>
                             ))}

@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import axiosClient from "../api/axiosClient";
+import Swal from "sweetalert2"; // Thêm SweetAlert2
 import "./Checkout.css";
 
 const districts = [
@@ -83,11 +84,31 @@ const Checkout = () => {
 
             await syncCartWithBackend();
 
-            alert("Đơn hàng đã được tạo thành công!");
-            navigate("/cart");
+            // Sử dụng SweetAlert2 để hiển thị thông báo đẹp hơn
+            Swal.fire({
+                icon: "success",
+                title: "Thành công!",
+                text: `Đơn hàng đã được tạo thành công! Mã đơn hàng: ${response.data.id}`,
+                confirmButtonText: "Xem đơn hàng",
+                showCancelButton: true,
+                cancelButtonText: "Về trang chủ"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Chuyển hướng đến trang chi tiết đơn hàng
+                    navigate(`/orders/${response.data.id}`);
+                } else {
+                    // Chuyển hướng về trang chủ
+                    navigate("/");
+                }
+            });
         } catch (error) {
             console.error("Failed to create order:", error.response?.data || error.message);
-            alert("Lỗi khi tạo đơn hàng: " + (error.response?.data?.message || error.message));
+            Swal.fire({
+                icon: "error",
+                title: "Lỗi!",
+                text: `Tạo đơn hàng thất bại: ${error.response?.data?.message || error.message}`,
+                confirmButtonText: "OK"
+            });
         }
     };
 
@@ -177,6 +198,11 @@ const Checkout = () => {
                             </div>
                             {errors.address && <span className="error">{errors.address}</span>}
                         </div>
+
+                        {/* Di chuyển nút vào trong form và thêm type="submit" */}
+                        <button type="submit" className="confirm-btn">
+                            Hoàn tất đơn hàng
+                        </button>
                     </form>
                 </div>
                 
@@ -254,10 +280,6 @@ const Checkout = () => {
                             <label htmlFor="bank-payment">Chuyển khoản ngân hàng</label>
                         </div>
                     </div>
-                    
-                    <button className="confirm-btn" onClick={handleSubmit}>
-                        Hoàn tất đơn hàng
-                    </button>
                 </div>
             </div>
         </div>

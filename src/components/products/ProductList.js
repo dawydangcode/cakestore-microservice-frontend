@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback, memo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../../api/axiosClient";
 import { CartContext } from "../../context/CartContext";
 import "./ProductList.css";
 import AddToCartModal from "./AddToCartModal";
+import debounce from "lodash/debounce";
 
-const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop products
-    const [products, setProducts] = useState(initialProducts); // Sử dụng state để lưu danh sách
+const ProductList = memo(({ products: initialProducts = [] }) => {
+    const [products, setProducts] = useState(initialProducts);
     const [categories, setCategories] = useState([]);
     const { addToCart } = useContext(CartContext);
     const navigate = useNavigate();
@@ -16,41 +17,46 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 9;
 
-    useEffect(() => {
-        // Chỉ gọi API nếu không có prop products (trường hợp không phải từ SearchPage)
-        if (initialProducts.length === 0) {
-            const fetchData = async () => {
-                try {
-                    const [productsResponse, categoriesResponse] = await Promise.all([
-                        axiosClient.get("/products/list"),
-                        axiosClient.get("/categories"),
-                    ]);
-                    setProducts(
-                        categoryId
-                            ? productsResponse.data.filter((p) => p.categoryId === parseInt(categoryId))
-                            : productsResponse.data
-                    );
-                    setCategories(categoriesResponse.data);
-                    setCurrentPage(1); // Reset về trang 1 khi thay đổi danh mục
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
-            };
-            fetchData();
-        } else {
-            // Nếu có prop products, sử dụng nó và không gọi API
-            setProducts(initialProducts);
-            setCategories([]); // Không cần danh mục trong SearchPage
-        }
-    }, [categoryId, initialProducts]);
+    const fetchData = useCallback(
+        debounce(async () => {
+            console.log("Fetching products for categoryId:", categoryId);
+            try {
+                const [productsResponse, categoriesResponse] = await Promise.all([
+                    axiosClient.get("/products/list"),
+                    axiosClient.get("/categories"),
+                ]);
+                setProducts(
+                    categoryId
+                        ? productsResponse.data.filter((p) => p.categoryId === parseInt(categoryId))
+                        : productsResponse.data
+                );
+                setCategories(categoriesResponse.data);
+                setCurrentPage(1);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }, 300),
+        [categoryId]
+    );
 
-    // Tính toán sản phẩm hiển thị trên trang hiện tại
+    useEffect(() => {
+        console.log("useEffect triggered with categoryId:", categoryId, "initialProducts:", initialProducts.length);
+        if (initialProducts.length === 0 && !products.length) {
+            fetchData();
+        } else if (initialProducts.length > 0) {
+            setProducts(initialProducts);
+            setCategories([]);
+        }
+        return () => fetchData.cancel();
+    }, [categoryId, initialProducts, fetchData, products.length]);
+
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
     const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
     const totalPages = Math.ceil(products.length / productsPerPage);
 
     const handleAddToCart = (product) => {
+        console.log("Adding to cart:", product.id);
         addToCart(product);
         setSelectedProduct(product);
         setShowModal(true);
@@ -58,6 +64,7 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
     };
 
     const handleCategoryClick = (categoryId) => {
+        console.log("Navigating to category:", categoryId);
         if (categoryId) {
             navigate(`/products/category/${categoryId}`);
         } else {
@@ -71,7 +78,7 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
-        window.scrollTo(0, 0); // Cuộn lên đầu trang khi chuyển trang
+        window.scrollTo(0, 0);
     };
 
     const handlePreviousPage = () => {
@@ -88,7 +95,6 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
         }
     };
 
-    // Tạo danh sách các số trang
     const pageNumbers = [];
     for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -147,7 +153,6 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
                     )}
                 </div>
 
-                {/* Phân trang */}
                 {products.length > productsPerPage && (
                     <div className="pagination">
                         <button
@@ -161,9 +166,7 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
                             <button
                                 key={number}
                                 onClick={() => handlePageChange(number)}
-                                className={`pagination-btn ${
-                                    currentPage === number ? "active" : ""
-                                }`}
+                                className={`pagination-btn ${currentPage === number ? "active" : ""}`}
                             >
                                 {number}
                             </button>
@@ -184,6 +187,6 @@ const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop pro
             )}
         </div>
     );
-};
+});
 
 export default ProductList;

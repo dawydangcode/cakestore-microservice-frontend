@@ -1,5 +1,4 @@
-// src/context/CartContext.js
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useCallback } from "react";
 import axiosClient from "../api/axiosClient";
 import { getToken } from "../auth/auth";
 
@@ -11,27 +10,28 @@ export const CartProvider = ({ children }) => {
     const fetchProductDetails = async (productId) => {
         try {
             const response = await axiosClient.get(`http://localhost:8080/products/${productId}`);
-            return response.data; // Trả về toàn bộ sản phẩm, bao gồm name, price, v.v.
+            console.log(`Fetched product ${productId}:`, response.data);
+            return response.data;
         } catch (error) {
             console.error(`Failed to fetch product ${productId}:`, error.response?.data || error.message);
             return null;
         }
     };
 
-    const syncCartWithBackend = async () => {
+    const syncCartWithBackend = useCallback(async () => {
         if (getToken()) {
             try {
+                console.log("Syncing cart with backend...");
                 const response = await axiosClient.get("/carts/getCartItems");
                 const cartItems = response.data;
 
-                // Lấy thông tin sản phẩm cho từng item
                 const updatedCart = await Promise.all(
                     cartItems.map(async (item) => {
                         const product = await fetchProductDetails(item.productId);
                         return {
                             ...item,
                             name: product ? product.name : `Sản phẩm #${item.productId}`,
-                            price: product ? product.price : item.price // Dùng price từ product-service nếu có
+                            price: product ? product.price : item.price
                         };
                     })
                 );
@@ -43,10 +43,6 @@ export const CartProvider = ({ children }) => {
                 setCart([]);
             }
         }
-    };
-
-    useEffect(() => {
-        syncCartWithBackend();
     }, []);
 
     const addToCart = async (product, quantity = 1) => {
