@@ -5,8 +5,8 @@ import { CartContext } from "../../context/CartContext";
 import "./ProductList.css";
 import AddToCartModal from "./AddToCartModal";
 
-const ProductList = () => {
-    const [products, setProducts] = useState([]);
+const ProductList = ({ products: initialProducts = [] }) => { // Nhận prop products
+    const [products, setProducts] = useState(initialProducts); // Sử dụng state để lưu danh sách
     const [categories, setCategories] = useState([]);
     const { addToCart } = useContext(CartContext);
     const navigate = useNavigate();
@@ -17,25 +17,32 @@ const ProductList = () => {
     const productsPerPage = 9;
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [productsResponse, categoriesResponse] = await Promise.all([
-                    axiosClient.get("/products/list"),
-                    axiosClient.get("/categories"),
-                ]);
-                setProducts(
-                    categoryId
-                        ? productsResponse.data.filter((p) => p.categoryId === parseInt(categoryId))
-                        : productsResponse.data
-                );
-                setCategories(categoriesResponse.data);
-                setCurrentPage(1); // Reset về trang 1 khi thay đổi danh mục
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchData();
-    }, [categoryId]);
+        // Chỉ gọi API nếu không có prop products (trường hợp không phải từ SearchPage)
+        if (initialProducts.length === 0) {
+            const fetchData = async () => {
+                try {
+                    const [productsResponse, categoriesResponse] = await Promise.all([
+                        axiosClient.get("/products/list"),
+                        axiosClient.get("/categories"),
+                    ]);
+                    setProducts(
+                        categoryId
+                            ? productsResponse.data.filter((p) => p.categoryId === parseInt(categoryId))
+                            : productsResponse.data
+                    );
+                    setCategories(categoriesResponse.data);
+                    setCurrentPage(1); // Reset về trang 1 khi thay đổi danh mục
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            fetchData();
+        } else {
+            // Nếu có prop products, sử dụng nó và không gọi API
+            setProducts(initialProducts);
+            setCategories([]); // Không cần danh mục trong SearchPage
+        }
+    }, [categoryId, initialProducts]);
 
     // Tính toán sản phẩm hiển thị trên trang hiện tại
     const indexOfLastProduct = currentPage * productsPerPage;

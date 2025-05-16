@@ -1,0 +1,95 @@
+.search-page {
+    text-align: center;
+    padding: 20px;
+}
+
+.search-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: auto;
+}
+
+.search-result-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.search-result-image {
+    width: 100%;
+    max-width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.search-result-details h3 {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.search-result-details p {
+    margin: 5px 0;
+    color: #b22222;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.search-result-details button {
+    margin: 5px;
+    padding: 8px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #ff5733;
+    color: white;
+    font-weight: bold;
+    width: 100%;
+}
+
+.search-result-details button:hover {
+    background-color: #c70039;
+}
+
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.pagination-btn.active {
+    background-color: #ff5733;
+    color: white;
+    border-color: #ff5733;
+}
+
+.pagination-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
