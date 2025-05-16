@@ -19,10 +19,7 @@ const ProductDetail = () => {
 
     // Giả định có nhiều hình ảnh cho sản phẩm
     const productImages = [
-        product?.image || "https://placehold.co/400x400",
-        "https://placehold.co/400x400?text=Image+2",
-        "https://placehold.co/400x400?text=Image+3",
-        "https://placehold.co/400x400?text=Image+4"
+        product?.image || "https://placehold.co/400x400"
     ];
 
     useEffect(() => {

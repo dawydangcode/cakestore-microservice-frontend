@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useState, useCallback, memo } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../../api/axiosClient";
 import { CartContext } from "../../context/CartContext";
 import "./ProductList.css";
 import AddToCartModal from "./AddToCartModal";
-import debounce from "lodash/debounce";
 
-const ProductList = memo(({ products: initialProducts = [] }) => {
-    const [products, setProducts] = useState(initialProducts);
+const ProductList = () => {
+    const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const { addToCart } = useContext(CartContext);
     const navigate = useNavigate();
@@ -17,9 +16,8 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 9;
 
-    const fetchData = useCallback(
-        debounce(async () => {
-            console.log("Fetching products for categoryId:", categoryId);
+    useEffect(() => {
+        const fetchData = async () => {
             try {
                 const [productsResponse, categoriesResponse] = await Promise.all([
                     axiosClient.get("/products/list"),
@@ -31,32 +29,20 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
                         : productsResponse.data
                 );
                 setCategories(categoriesResponse.data);
-                setCurrentPage(1);
+                setCurrentPage(1); // Reset về trang 1 khi thay đổi danh mục
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
-        }, 300),
-        [categoryId]
-    );
-
-    useEffect(() => {
-        console.log("useEffect triggered with categoryId:", categoryId, "initialProducts:", initialProducts.length);
-        if (initialProducts.length === 0 && !products.length) {
-            fetchData();
-        } else if (initialProducts.length > 0) {
-            setProducts(initialProducts);
-            setCategories([]);
-        }
-        return () => fetchData.cancel();
-    }, [categoryId, initialProducts, fetchData, products.length]);
-
+        };
+        fetchData();
+    }, [categoryId]);
+    // Tính toán sản phẩm hiển thị trên trang hiện tại
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
     const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
     const totalPages = Math.ceil(products.length / productsPerPage);
 
     const handleAddToCart = (product) => {
-        console.log("Adding to cart:", product.id);
         addToCart(product);
         setSelectedProduct(product);
         setShowModal(true);
@@ -64,7 +50,6 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
     };
 
     const handleCategoryClick = (categoryId) => {
-        console.log("Navigating to category:", categoryId);
         if (categoryId) {
             navigate(`/products/category/${categoryId}`);
         } else {
@@ -78,7 +63,7 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0); // Cuộn lên đầu trang khi chuyển trang
     };
 
     const handlePreviousPage = () => {
@@ -95,6 +80,7 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
         }
     };
 
+    // Tạo danh sách các số trang
     const pageNumbers = [];
     for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
@@ -153,6 +139,7 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
                     )}
                 </div>
 
+                {/* Phân trang */}
                 {products.length > productsPerPage && (
                     <div className="pagination">
                         <button
@@ -166,7 +153,9 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
                             <button
                                 key={number}
                                 onClick={() => handlePageChange(number)}
-                                className={`pagination-btn ${currentPage === number ? "active" : ""}`}
+                                className={`pagination-btn ${
+                                    currentPage === number ? "active" : ""
+                                }`}
                             >
                                 {number}
                             </button>
@@ -187,6 +176,6 @@ const ProductList = memo(({ products: initialProducts = [] }) => {
             )}
         </div>
     );
-});
+};
 
 export default ProductList;
