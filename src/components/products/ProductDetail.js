@@ -9,35 +9,56 @@ const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState("details");
     const [selectedImage, setSelectedImage] = useState(0);
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState("");
+    const [canReview, setCanReview] = useState(false);
     const navigate = useNavigate();
     const { addToCart } = useContext(CartContext);
     const [showModal, setShowModal] = useState(false);
 
-    // Giả định có nhiều hình ảnh cho sản phẩm
     const productImages = [
         product?.image || "https://placehold.co/400x400"
     ];
 
     useEffect(() => {
-        const fetchProduct = async () => {
+        const fetchProductAndReviews = async () => {
             try {
                 console.log(`Đang lấy sản phẩm với id: ${id}`);
-                const response = await axiosClient.get(`/products/${id}`);
-                console.log("Dữ liệu API:", response.data);
-                setProduct(response.data);
+                const productResponse = await axiosClient.get(`/products/${id}`);
+                console.log("Dữ liệu sản phẩm:", productResponse.data);
+                setProduct(productResponse.data);
+
+                console.log(`Đang lấy đánh giá cho sản phẩm id: ${id}`);
+                const reviewsResponse = await axiosClient.get(`/products/reviews/product/${id}`); // Cập nhật URL
+                console.log("Dữ liệu đánh giá:", reviewsResponse.data);
+                setReviews(reviewsResponse.data);
+
+                // Kiểm tra xem người dùng có quyền đánh giá
+                try {
+                    const ordersResponse = await axiosClient.get(`/orders/by-user`);
+                    const canReview = ordersResponse.data.some(order =>
+                        order.orderItems.some(item => item.productId === parseInt(id))
+                    );
+                    setCanReview(canReview);
+                    console.log(`Người dùng có quyền đánh giá: ${canReview}`);
+                } catch (error) {
+                    console.error("Lỗi khi kiểm tra quyền đánh giá:", error);
+                    setCanReview(false);
+                }
+
                 setLoading(false);
             } catch (error) {
-                console.error("Lỗi khi lấy sản phẩm:", error.response || error);
+                console.error("Lỗi khi lấy dữ liệu:", error.response || error);
                 setLoading(false);
             }
         };
 
-        fetchProduct();
-        // Cuộn lên đầu trang khi component mount
+        fetchProductAndReviews();
         window.scrollTo(0, 0);
     }, [id]);
 
@@ -63,7 +84,7 @@ const ProductDetail = () => {
         if (product) {
             addToCart(product, quantity);
             setShowModal(true);
-            setTimeout(() => setShowModal(false), 3000); // Tắt modal sau 3 giây
+            setTimeout(() => setShowModal(false), 3000);
         }
     };
 
@@ -73,6 +94,49 @@ const ProductDetail = () => {
 
     const handleModalClose = () => {
         setShowModal(false);
+    };
+
+    const handleStarClick = (star) => {
+        setRating(star);
+    };
+
+    const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (rating < 1 || rating > 5) {
+        alert("Vui lòng chọn số sao từ 1 đến 5");
+        return;
+    }
+    try {
+            const ordersResponse = await axiosClient.get(`/orders/by-user`);
+            const validOrder = ordersResponse.data.find(order =>
+                order.orderItems.some(item => item.productId === parseInt(id))
+            );
+            if (!validOrder) {
+                alert("Không tìm thấy đơn hàng hợp lệ để đánh giá");
+                return;
+            }
+
+            const reviewData = {
+                productId: parseInt(id),
+                orderId: validOrder.id,
+                rating,
+                comment
+            };
+            const token = localStorage.getItem("token");
+            console.log("Gửi đánh giá:", reviewData, "Token:", token);
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+            await axiosClient.post("/products/reviews", reviewData, config);
+            alert("Đánh giá đã được gửi thành công!");
+            setRating(0);
+            setComment("");
+            const reviewsResponse = await axiosClient.get(`/products/reviews/product/${id}`);
+            setReviews(reviewsResponse.data);
+        } catch (error) {
+            console.error("Lỗi khi gửi đánh giá:", error.response?.data || error);
+            alert(error.response?.data || "Lỗi khi gửi đánh giá");
+        }
     };
 
     const getStockStatus = (stock) => {
@@ -226,9 +290,56 @@ const ProductDetail = () => {
                         </div>
                     )}
                     {activeTab === "reviews" && (
-                        <div>
-                            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
-                            <p>Hãy là người đầu tiên đánh giá sản phẩm!</p>
+                        <div className="reviews-section">
+                            {canReview ? (
+                                <form className="review-form" onSubmit={handleReviewSubmit}>
+                                    <h3>Đánh giá sản phẩm</h3>
+                                    <div className="star-rating">
+                                        {[1, 2, 3, 4, 5].map(star => (
+                                            <span
+                                                key={star}
+                                                className={`star ${rating >= star ? 'filled' : ''}`}
+                                                onClick={() => handleStarClick(star)}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <textarea
+                                        value={comment}
+                                        onChange={(e) => setComment(e.target.value)}
+                                        placeholder="Viết nhận xét của bạn..."
+                                        rows="4"
+                                        required
+                                    />
+                                    <button type="submit" className="submit-review">
+                                        Gửi đánh giá
+                                    </button>
+                                </form>
+                            ) : (
+                                <p>Bạn cần mua sản phẩm này để có thể gửi đánh giá.</p>
+                            )}
+                            <div className="reviews-list">
+                                {reviews.length > 0 ? (
+                                    reviews.map(review => (
+                                        <div key={review.id} className="review-item">
+                                            <div className="review-header">
+                                                <span className="review-user">{review.userId}</span>
+                                                <span className="review-rating">
+                                                    {Array(review.rating).fill('★').join('')}
+                                                    {Array(5 - review.rating).fill('☆').join('')}
+                                                </span>
+                                            </div>
+                                            <p className="review-comment">{review.comment}</p>
+                                            <p className="review-date">
+                                                {new Date(review.createdAt).toLocaleDateString('vi-VN')}
+                                            </p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                                )}
+                            </div>
                         </div>
                     )}
                     {activeTab === "policy" && (

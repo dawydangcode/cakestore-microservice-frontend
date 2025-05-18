@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import axiosClient from "../api/axiosClient";
-import Swal from "sweetalert2"; // Thêm SweetAlert2
+import Swal from "sweetalert2";
 import "./Checkout.css";
 
 const districts = [
@@ -14,7 +14,7 @@ const districts = [
 ];
 
 const Checkout = () => {
-    const { cart, syncCartWithBackend } = useContext(CartContext);
+    const { cart } = useContext(CartContext); // Xóa syncCartWithBackend
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -52,6 +52,7 @@ const Checkout = () => {
         if (!formData.district) newErrors.district = "Quận/Huyện là bắt buộc";
         if (!formData.address) newErrors.address = "Địa chỉ chi tiết là bắt buộc";
         setErrors(newErrors);
+        console.log("Validation errors:", newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
@@ -66,9 +67,14 @@ const Checkout = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
+        console.log("Submitting form with data:", formData);
+        if (!validateForm()) {
+            console.log("Form validation failed");
+            return;
+        }
 
         try {
+            const startTime = performance.now();
             const orderRequest = {
                 fullName: formData.fullName,
                 phoneNumber: formData.phoneNumber,
@@ -78,14 +84,15 @@ const Checkout = () => {
                 note: formData.note,
                 paymentMethod: formData.paymentMethod
             };
+            console.log("Sending order request:", orderRequest);
 
             const response = await axiosClient.post("/orders/create", orderRequest);
-            console.log("Order created:", response.data);
+            const endTime = performance.now();
+            console.log(`Order created successfully in ${(endTime - startTime) / 1000} seconds:`, response.data);
 
-            await syncCartWithBackend();
+            // Không gọi syncCartWithBackend vì clearCart đã chạy trong OrderService
 
-            // Sử dụng SweetAlert2 để hiển thị thông báo đẹp hơn
-            Swal.fire({
+            await Swal.fire({
                 icon: "success",
                 title: "Thành công!",
                 text: `Đơn hàng đã được tạo thành công! Mã đơn hàng: ${response.data.id}`,
@@ -94,16 +101,16 @@ const Checkout = () => {
                 cancelButtonText: "Về trang chủ"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Chuyển hướng đến trang chi tiết đơn hàng
+                    console.log("Navigating to order:", response.data.id);
                     navigate(`/orders/${response.data.id}`);
                 } else {
-                    // Chuyển hướng về trang chủ
+                    console.log("Navigating to home");
                     navigate("/");
                 }
             });
         } catch (error) {
-            console.error("Failed to create order:", error.response?.data || error.message);
-            Swal.fire({
+            console.error("Failed to create order:", error.message, error.response?.data);
+            await Swal.fire({
                 icon: "error",
                 title: "Lỗi!",
                 text: `Tạo đơn hàng thất bại: ${error.response?.data?.message || error.message}`,
@@ -199,7 +206,6 @@ const Checkout = () => {
                             {errors.address && <span className="error">{errors.address}</span>}
                         </div>
 
-                        {/* Di chuyển nút vào trong form và thêm type="submit" */}
                         <button type="submit" className="confirm-btn">
                             Hoàn tất đơn hàng
                         </button>
