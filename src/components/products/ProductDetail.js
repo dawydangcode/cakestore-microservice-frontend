@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosClient from "../../api/axiosClient";
 import { CartContext } from "../../context/CartContext";
@@ -12,7 +12,7 @@ const ProductDetail = () => {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
-    const [activeTab, setActiveTab] = useState("details");
+    const [activeTab, setActiveTab] = useState("reviews");
     const [selectedImage, setSelectedImage] = useState(0);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
@@ -20,10 +20,46 @@ const ProductDetail = () => {
     const navigate = useNavigate();
     const { addToCart } = useContext(CartContext);
     const [showModal, setShowModal] = useState(false);
+    // Thêm state cho zoom
+    const [showZoom, setShowZoom] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+    const imageRef = useRef(null);
+
+    const averageRating = reviews.length > 0
+        ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+        : 0;
 
     const productImages = [
         product?.image || "https://placehold.co/400x400"
     ];
+
+    // Xử lý sự kiện zoom
+    const handleMouseMove = (e) => {
+        if (!imageRef.current) return;
+
+        const { left, top, width, height } = imageRef.current.getBoundingClientRect();
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+
+        // Chỉ hiển thị zoom nếu con trỏ trong giới hạn ảnh
+        if (x >= 0 && x <= width && y >= 0 && y <= height) {
+            setShowZoom(true);
+            // Tính vị trí nền của ảnh trong khung zoom
+            const zoomX = (x / width) * 100;
+            const zoomY = (y / height) * 100;
+            setZoomPosition({ x: zoomX, y: zoomY });
+        } else {
+            setShowZoom(false);
+        }
+    };
+
+    const handleMouseEnter = () => {
+        setShowZoom(true);
+    };
+
+    const handleMouseLeave = () => {
+        setShowZoom(false);
+    };
 
     useEffect(() => {
         const fetchProductAndReviews = async () => {
@@ -34,11 +70,10 @@ const ProductDetail = () => {
                 setProduct(productResponse.data);
 
                 console.log(`Đang lấy đánh giá cho sản phẩm id: ${id}`);
-                const reviewsResponse = await axiosClient.get(`/products/reviews/product/${id}`); // Cập nhật URL
+                const reviewsResponse = await axiosClient.get(`/products/reviews/product/${id}`);
                 console.log("Dữ liệu đánh giá:", reviewsResponse.data);
                 setReviews(reviewsResponse.data);
 
-                // Kiểm tra xem người dùng có quyền đánh giá
                 try {
                     const ordersResponse = await axiosClient.get(`/orders/by-user`);
                     const canReview = ordersResponse.data.some(order =>
@@ -101,12 +136,12 @@ const ProductDetail = () => {
     };
 
     const handleReviewSubmit = async (e) => {
-    e.preventDefault();
-    if (rating < 1 || rating > 5) {
-        alert("Vui lòng chọn số sao từ 1 đến 5");
-        return;
-    }
-    try {
+        e.preventDefault();
+        if (rating < 1 || rating > 5) {
+            alert("Vui lòng chọn số sao từ 1 đến 5");
+            return;
+        }
+        try {
             const ordersResponse = await axiosClient.get(`/orders/by-user`);
             const validOrder = ordersResponse.data.find(order =>
                 order.orderItems.some(item => item.productId === parseInt(id))
@@ -181,11 +216,26 @@ const ProductDetail = () => {
         <div className="product-detail">
             <div className="product-container">
                 <div className="product-image-section">
-                    <img
-                        src={productImages[selectedImage]}
-                        alt={product.name}
-                        className="product-image"
-                    />
+                    <div className="image-zoom-wrapper">
+                        <img
+                            src={productImages[selectedImage]}
+                            alt={product.name}
+                            className="product-image"
+                            ref={imageRef}
+                            onMouseMove={handleMouseMove}
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                        />
+                        {showZoom && (
+                            <div
+                                className="zoom-container"
+                                style={{
+                                    backgroundImage: `url(${productImages[selectedImage]})`,
+                                    backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`
+                                }}
+                            />
+                        )}
+                    </div>
                     <div className="small-images-container">
                         {productImages.map((image, index) => (
                             <img
@@ -214,6 +264,20 @@ const ProductDetail = () => {
                             {product.stock !== undefined ? `${product.stock} sản phẩm` : "Không có thông tin tồn kho"}
                             {getStockStatus(product.stock)}
                         </p>
+                    </div>
+                    <div className="average-rating">
+                        {averageRating > 0 ? (
+                            <>
+                                <span className="average-rating-value">{averageRating}</span>
+                                <span className="average-rating-stars">
+                                    {Array(Math.round(averageRating)).fill('★').join('')}
+                                    {Array(5 - Math.round(averageRating)).fill('☆').join('')}
+                                </span>
+                                <span className="average-rating-count">({reviews.length} đánh giá)</span>
+                            </>
+                        ) : (
+                            <span className="no-reviews">Chưa có đánh giá</span>
+                        )}
                     </div>
                     
                     <div className="quantity-section">
@@ -265,17 +329,19 @@ const ProductDetail = () => {
             <div className="tabs-section">
                 <div className="tabs">
                     <button
-                        className={activeTab === "details" ? "active" : ""}
-                        onClick={() => setActiveTab("details")}
-                    >
-                        Chi tiết sản phẩm
-                    </button>
-                    <button
                         className={activeTab === "reviews" ? "active" : ""}
                         onClick={() => setActiveTab("reviews")}
                     >
                         Đánh giá & Nhận xét
                     </button>
+
+                    <button
+                        className={activeTab === "details" ? "active" : ""}
+                        onClick={() => setActiveTab("details")}
+                    >
+                        Chi tiết sản phẩm
+                    </button>
+                    
                     <button
                         className={activeTab === "policy" ? "active" : ""}
                         onClick={() => setActiveTab("policy")}
@@ -325,7 +391,7 @@ const ProductDetail = () => {
                                         <div key={review.id} className="review-item">
                                             <div className="review-header">
                                                 <span className="review-user">{review.userId}</span>
-                                                <span className="review-rating">
+                                                <span className="average-rating-stars">
                                                     {Array(review.rating).fill('★').join('')}
                                                     {Array(5 - review.rating).fill('☆').join('')}
                                                 </span>

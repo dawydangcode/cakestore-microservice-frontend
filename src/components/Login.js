@@ -29,7 +29,7 @@ const Login = () => {
 
         try {
             const { token, roles, cartItems } = await login(username, password);
-            setAuth(token, username);
+            setAuth(token, username, roles); // Truyền roles
             await syncCartWithBackend();
 
             if (roles.includes("ROLE_ADMIN")) {
