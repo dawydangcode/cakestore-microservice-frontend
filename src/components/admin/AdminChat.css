@@ -78,7 +78,7 @@
     overflow-y: auto;
     background-color: #f9fafb;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Đảm bảo tin nhắn hiển thị từ trên xuống (cũ trên, mới dưới) */
 }
 
 .chat-messages .message {

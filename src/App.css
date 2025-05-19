@@ -88,7 +88,7 @@ button:hover {
 /* Style cho ChatWidget */
 .chat-widget {
   position: fixed;
-  bottom: 100px;
+  bottom: 20px;
   right: 20px;
   width: 320px;
   height: 400px;
@@ -126,6 +126,8 @@ button:hover {
   padding: 10px;
   overflow-y: auto;
   background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-widget .chat-input {
@@ -150,18 +152,22 @@ button:hover {
   margin: 5px 0;
   padding: 8px;
   border-radius: 5px;
+  max-width: 80%;
+  display: inline-block;
 }
 
 .chat-widget .message.support {
   background-color: #ff5733;
   color: white;
-  align-self: flex-end;
+  align-self: flex-start;
+  margin-right: auto;
 }
 
 .chat-widget .message.user,
 .chat-widget .message.guest {
   background-color: #e0e0e0;
-  align-self: flex-start;
+  align-self: flex-end;
+  margin-left: auto;
 }
 
 /* Animation cho ChatWidget */

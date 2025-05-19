@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
@@ -13,6 +13,12 @@ const ChatWidget = ({ onClose }) => {
     const [userName] = useState(
         isLoggedIn ? authUserName : `guest_${Math.random().toString(36).substr(2, 9)}`
     );
+    const messagesEndRef = useRef(null); // Tham chiếu đến cuối danh sách tin nhắn
+
+    // Tự động cuộn xuống cuối khi có tin nhắn mới
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
     useEffect(() => {
         localStorage.setItem('userName', userName);
@@ -104,6 +110,7 @@ const ChatWidget = ({ onClose }) => {
                         {msg.message}
                     </div>
                 ))}
+                <div ref={messagesEndRef} />
             </div>
             <div className="chat-input">
                 <input

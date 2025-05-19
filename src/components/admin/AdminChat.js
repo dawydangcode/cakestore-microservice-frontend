@@ -51,10 +51,13 @@ const AdminChat = () => {
                             // Thay thế tin nhắn tạm
                             const newMessages = [...prev];
                             newMessages[tempIndex] = receivedMessage;
-                            return newMessages;
+                            // Sắp xếp lại theo createdAt
+                            return newMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                         }
                         if (prev.some(msg => msg.id === receivedMessage.id)) return prev;
-                        return [...prev, receivedMessage];
+                        // Thêm tin nhắn mới và sắp xếp
+                        const updatedMessages = [...prev, receivedMessage];
+                        return updatedMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                     });
                 }
                 // Cập nhật danh sách users nếu có user mới
@@ -83,10 +86,14 @@ const AdminChat = () => {
             axios.get(`http://localhost:8081/chat/history?userName=${selectedUser}`)
                 .then(response => {
                     console.log('Chat history:', response.data);
-                    setMessages(response.data.map(msg => ({
-                        ...msg,
-                        senderType: msg.sender_type || msg.senderType
-                    })));
+                    // Sắp xếp tin nhắn theo createdAt tăng dần
+                    const sortedMessages = response.data
+                        .map(msg => ({
+                            ...msg,
+                            senderType: msg.sender_type || msg.senderType
+                        }))
+                        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                    setMessages(sortedMessages);
                 })
                 .catch(error => console.error('Error fetching chat history:', error));
         } else {
@@ -114,8 +121,11 @@ const AdminChat = () => {
                 tempId // Thêm tempId để theo dõi tin nhắn tạm
             };
             console.log('Sending message:', message);
-            // Thêm tin nhắn tạm vào state
-            setMessages(prev => [...prev, { ...message, senderType: 'SUPPORT' }]);
+            // Thêm tin nhắn tạm và sắp xếp
+            setMessages(prev => {
+                const updatedMessages = [...prev, { ...message, senderType: 'SUPPORT' }];
+                return updatedMessages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            });
             stompClient.publish({
                 destination: '/app/chat.send',
                 body: JSON.stringify(message)
