@@ -67,7 +67,7 @@ const AppContent = () => {
                                     className="chat-toggle-btn"
                                     onClick={() => setShowChatWidget(true)}
                                 >
-                                    💬 Chat
+                                    💬
                                 </button>
                             )}
                             {showChatWidget && <ChatWidget onClose={() => setShowChatWidget(false)} />}

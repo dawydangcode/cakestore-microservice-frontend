@@ -34,8 +34,8 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
-  
 }
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -58,4 +58,120 @@ button {
 
 button:hover {
   background-color: #c70039;
+}
+
+/* Style cho nút chat lơ lửng */
+.chat-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #ff5733;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.2s ease-in-out;
+}
+
+.chat-toggle-btn:hover {
+  background-color: #c70039;
+  transform: scale(1.1);
+}
+
+/* Style cho ChatWidget */
+.chat-widget {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+.chat-widget .chat-header {
+  background-color: #ff5733;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-widget .chat-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.chat-widget .chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.chat-widget .chat-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chat-widget .chat-input input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.chat-widget .chat-input button {
+  padding: 8px 16px;
+}
+
+.chat-widget .message {
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.chat-widget .message.support {
+  background-color: #ff5733;
+  color: white;
+  align-self: flex-end;
+}
+
+.chat-widget .message.user,
+.chat-widget .message.guest {
+  background-color: #e0e0e0;
+  align-self: flex-start;
+}
+
+/* Animation cho ChatWidget */
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
