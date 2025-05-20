@@ -124,10 +124,10 @@ export const CartProvider = ({ children }) => {
                     price: product.price
                 });
                 await syncCartWithBackend();
-                setMessage({
-                    type: "success",
-                    text: `Đã thêm "${product.name}" vào giỏ hàng!`
-                });
+                // setMessage({
+                //     type: "success",
+                //     text: `Đã thêm "${product.name}" vào giỏ hàng!`
+                // });
             }
         } catch (error) {
             console.error("Failed to add to cart:", error.response?.data || error.message);

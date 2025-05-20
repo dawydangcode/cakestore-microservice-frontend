@@ -100,7 +100,7 @@ const CartPage = () => {
                                         />
                                     </td>
                                     <td>{item.name || "Sản phẩm #" + item.productId}</td>
-                                    <td>{formatPrice(item.price || 0)} VND</td>
+                                    <td>{formatPrice(item.price || 0)} đ</td>
                                     <td>
                                         <div className="quantity-control">
                                             <button
@@ -113,7 +113,7 @@ const CartPage = () => {
                                             >+</button>
                                         </div>
                                     </td>
-                                    <td>{formatPrice((item.price || 0) * (item.quantity || 1))} VND</td>
+                                    <td>{formatPrice((item.price || 0) * (item.quantity || 1))} đ</td>
                                     <td>
                                         <button
                                             onClick={() => removeFromCart(item.cartId, item.productId)}
