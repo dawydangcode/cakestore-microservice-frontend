@@ -33,7 +33,7 @@ const Login = () => {
             await syncCartWithBackend();
 
             if (roles.includes("ROLE_ADMIN")) {
-                navigate("/admin");
+                navigate("/admin/dashboard");
             } else {
                 navigate("/");
             }

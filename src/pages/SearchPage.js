@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axiosClient from "../../src/api/axiosClient"; // Sử dụng axiosClient
+import axiosClient from "../../src/api/axiosClient";
 import { CartContext } from "../../src/context/CartContext";
 import "./SearchPage.css";
 import debounce from "lodash/debounce";
+import Swal from "sweetalert2";
 
 const SearchPage = () => {
     const [searchParams] = useSearchParams();
@@ -11,7 +12,7 @@ const SearchPage = () => {
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 9;
-    const { addToCart } = React.useContext(CartContext);
+    const { addToCart, message } = React.useContext(CartContext);
     const navigate = useNavigate();
 
     const fetchSearchResults = useCallback(
@@ -35,6 +36,17 @@ const SearchPage = () => {
         }
         return () => fetchSearchResults.cancel();
     }, [query, fetchSearchResults]);
+
+    useEffect(() => {
+        if (message.text) {
+            Swal.fire({
+                icon: message.type === "success" ? "success" : "error",
+                title: message.type === "success" ? "Thành công!" : "Lỗi!",
+                text: message.text,
+                confirmButtonText: "OK",
+            });
+        }
+    }, [message]);
 
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -60,8 +72,18 @@ const SearchPage = () => {
         }
     };
 
-    const handleAddToCart = (product) => {
-        addToCart(product);
+    const handleAddToCart = async (product) => {
+        try {
+            await addToCart(product);
+        } catch (error) {
+            console.error("Failed to add to cart in SearchPage:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Lỗi!",
+                text: "Không thể thêm sản phẩm vào giỏ hàng.",
+                confirmButtonText: "OK",
+            });
+        }
     };
 
     const pageNumbers = [];

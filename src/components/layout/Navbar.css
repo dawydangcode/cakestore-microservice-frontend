@@ -1,217 +1,311 @@
+/* Navbar chính */
 .navbar {
-    background-color: #ffcc99;
-    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
 }
 
+.navbar.scrolled {
+    padding: 8px 24px;
+}
+
+/* Logo và thương hiệu */
 .navbar h2 {
     margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e67e22;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.3s ease;
 }
 
+.navbar h2:hover {
+    transform: scale(1.05);
+}
+
+/* Menu chính */
 .navbar ul {
     list-style: none;
     padding: 0;
+    margin: 0;
     display: flex;
-    gap: 15px;
-}
-
-.navbar a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-}
-
-.navbar a:hover {
-    color: #ff5733;
-}
-
-.navbar {
-    background-color: #ffcc99;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
+    gap: 24px;
     align-items: center;
 }
 
-.navbar ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 15px;
-}
-
-.navbar a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
+.navbar li {
     position: relative;
 }
 
+.navbar a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+    position: relative;
+    padding: 5px 0;
+    transition: all 0.2s ease;
+}
+
+.navbar a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #e67e22;
+    transition: width 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #e67e22;
+}
+
+.navbar a:hover::after {
+    width: 100%;
+}
+
+/* Biểu tượng giỏ hàng và số đếm */
+.cart-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cart-icon {
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.cart-link:hover .cart-icon {
+    transform: translateY(-2px);
+}
+
 .cart-count {
-    background-color: red;
+    background-color: #e74c3c;
     color: white;
     border-radius: 50%;
-    padding: 5px 10px;
-    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: -8px;
     right: -10px;
-}
-.hamburger-menu {
-    font-size: 24px;
-    cursor: pointer;
-    display: none;
+    transition: transform 0.2s ease;
+    font-weight: bold;
 }
 
+.cart-link:hover .cart-count {
+    transform: scale(1.1);
+}
+
+/* Biểu tượng menu và tìm kiếm */
+.menu-icon, .search-icon {
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    transition: color 0.2s ease, transform 0.2s ease;
+    background: none;
+    border: none;
+    padding: 8px;
+}
+
+.menu-icon:hover, .search-icon:hover {
+    color: #e67e22;
+    transform: scale(1.1);
+}
+
+/* Menu dropdown */
 .dropdown-menu {
     position: absolute;
-    top: 60px;
-    right: 20px;
+    right: 0;
+    top: 45px;
     background: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
+    min-width: 180px;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.dropdown-menu a {
-    padding: 10px 20px;
-    text-decoration: none;
-    color: black;
-    border-bottom: 1px solid #eee;
+.dropdown-menu.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
-.dropdown-menu a:last-child {
-    border-bottom: none;
-}
-
-.dropdown-menu a:hover {
-    background-color: #f0f0f0;
-}
-
-/* Hiển thị menu ba gạch trên màn hình nhỏ */
-@media screen and (max-width: 768px) {
-    .hamburger-menu {
-        display: block;
-    }
-
-    .navbar ul {
-        display: none; /* Ẩn menu chính khi trên mobile */
-    }
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background: #f8f8f8;
-}
-
-.navbar ul {
-    display: flex;
-    list-style: none;
-    gap: 20px;
-    align-items: center;
-}
-
-.navbar .menu-icon {
-    cursor: pointer;
-    font-size: 24px;
-}
-
-.dropdown-menu {
-    position: absolute;
-    right: 20px;
-    top: 50px;
-    background: white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    min-width: 150px;
-}
-
-.dropdown-menu a, .dropdown-menu button {
+.dropdown-menu a, 
+.dropdown-menu button {
     display: block;
-    padding: 8px 12px;
+    padding: 12px 16px;
     text-align: left;
     text-decoration: none;
-    color: black;
+    color: #333;
     background: none;
     border: none;
     width: 100%;
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
 }
 
-.dropdown-menu a:hover, .dropdown-menu button:hover {
-    background: #f0f0f0;
+.dropdown-menu a:hover, 
+.dropdown-menu button:hover {
+    background: #f7f7f7;
+    color: #e67e22;
+    padding-left: 20px;
 }
 
+.dropdown-menu p {
+    padding: 12px 16px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Search overlay */
 .search-overlay {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    width: 80%;
-    max-width: 500px;
-}
-
-.search-overlay input {
+    top: 0;
+    left: 0;
     width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding-top: 100px;
 }
 
-.search-overlay button {
-    padding: 8px 15px;
-    background-color: #ff5733;
+.search-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.search-container {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-overlay.active .search-container {
+    transform: translateY(0);
+}
+
+.search-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.search-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    padding: 8px 12px;
+}
+
+.search-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #333;
+    padding: 0 8px;
+    transition: color 0.2s ease;
+}
+
+.search-close:hover {
+    color: #e74c3c;
+}
+
+.search-button {
+    background: #e67e22;
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.search-overlay button:hover {
-    background-color: #c70039;
+.search-button:hover {
+    background: #d35400;
+}
+
+.search-results-wrapper {
+    overflow-y: auto;
+    max-height: calc(70vh - 65px);
 }
 
 .search-results-underbar {
-    margin-top: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
 }
 
 .search-result-item {
     display: flex;
     align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
 }
 
-.search-result-item:last-child {
-    border-bottom: none;
+.search-result-item:hover {
+    background: #f9f9f9;
 }
 
 .search-result-image {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    margin-right: 10px;
-    border-radius: 4px;
+    margin-right: 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-result-details {
@@ -223,16 +317,74 @@
 .search-result-details a {
     text-decoration: none;
     color: #333;
-    font-size: 14px;
-    margin-bottom: 5px;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    font-weight: 500;
+    transition: color 0.2s ease;
 }
 
 .search-result-details a:hover {
-    color: #ff5733;
+    color: #e67e22;
 }
 
 .search-result-price {
-    color: #b22222;
-    font-weight: bold;
-    font-size: 14px;
+    color: #e74c3c;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.search-results-empty {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .navbar {
+        padding: 10px 16px;
+    }
+    
+    .navbar h2 {
+        font-size: 1.3rem;
+    }
+    
+    .navbar .main-links {
+        display: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    .dropdown-menu {
+        position: fixed;
+        top: 60px;
+        right: 16px;
+        width: calc(100% - 32px);
+        max-width: 300px;
+    }
+    
+    .search-container {
+        width: 95%;
+    }
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease forwards;
 }

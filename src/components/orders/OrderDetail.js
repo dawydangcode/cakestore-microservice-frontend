@@ -71,7 +71,8 @@ const OrderDetail = () => {
             </table>
             <div className="order-summary">
                 <p>Giá sản phẩm: {order.totalPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
-                <p><strong>Tổng tiền: {(order.totalPrice).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</strong></p>
+                <p>Giao hàng tận nơi: 40,000₫</p>
+                <p><strong>Tổng tiền: {(order.totalPrice + 40000).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</strong></p>
             </div>
             <div className="order-address">
                 <h3>Địa chỉ thanh toán</h3>
@@ -87,3 +88,4 @@ const OrderDetail = () => {
 };
 
 export default OrderDetail;
+

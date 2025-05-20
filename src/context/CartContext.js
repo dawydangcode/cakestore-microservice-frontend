@@ -124,10 +124,6 @@ export const CartProvider = ({ children }) => {
                     price: product.price
                 });
                 await syncCartWithBackend();
-                // setMessage({
-                //     type: "success",
-                //     text: `Đã thêm "${product.name}" vào giỏ hàng!`
-                // });
             }
         } catch (error) {
             console.error("Failed to add to cart:", error.response?.data || error.message);
@@ -182,6 +178,26 @@ export const CartProvider = ({ children }) => {
         }
     };
 
+    const clearCart = async () => {
+        try {
+            console.log("Clearing cart in CartContext...");
+            setCart([]);
+            if (getToken()) {
+                await syncCartWithBackend();
+                // setMessage({
+                //     type: "success",
+                //     text: "Đã xóa toàn bộ giỏ hàng."
+                // });
+            }
+        } catch (error) {
+            console.error("Failed to clear cart:", error.response?.data || error.message);
+            setMessage({
+                type: "error",
+                text: "Lỗi khi xóa giỏ hàng: " + (error.response?.data || error.message)
+            });
+        }
+    };
+
     return (
         <CartContext.Provider value={{
             cart,
@@ -190,6 +206,7 @@ export const CartProvider = ({ children }) => {
             increaseQuantity,
             decreaseQuantity,
             syncCartWithBackend,
+            clearCart,
             message,
             setMessage
         }}>
