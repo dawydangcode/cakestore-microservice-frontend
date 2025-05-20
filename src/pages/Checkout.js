@@ -14,7 +14,7 @@ const districts = [
 ];
 
 const Checkout = () => {
-    const { cart } = useContext(CartContext); // Xóa syncCartWithBackend
+    const { cart } = useContext(CartContext);
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -28,6 +28,7 @@ const Checkout = () => {
     });
 
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
 
     const formatPrice = (price) => {
         return price.toLocaleString("vi-VN");
@@ -73,6 +74,7 @@ const Checkout = () => {
             return;
         }
 
+        setIsLoading(true); // Bật spinner
         try {
             const startTime = performance.now();
             const orderRequest = {
@@ -89,8 +91,6 @@ const Checkout = () => {
             const response = await axiosClient.post("/orders/create", orderRequest);
             const endTime = performance.now();
             console.log(`Order created successfully in ${(endTime - startTime) / 1000} seconds:`, response.data);
-
-            // Không gọi syncCartWithBackend vì clearCart đã chạy trong OrderService
 
             await Swal.fire({
                 icon: "success",
@@ -116,6 +116,8 @@ const Checkout = () => {
                 text: `Tạo đơn hàng thất bại: ${error.response?.data?.message || error.message}`,
                 confirmButtonText: "OK"
             });
+        } finally {
+            setIsLoading(false); // Tắt spinner
         }
     };
 
@@ -138,6 +140,7 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
+                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Họ và tên *</span>
                             </div>
@@ -153,6 +156,7 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
+                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Điện thoại *</span>
                             </div>
@@ -167,6 +171,7 @@ const Checkout = () => {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     placeholder=" "
+                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Email</span>
                             </div>
@@ -180,6 +185,7 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     className={formData.district ? "has-value" : ""}
                                     required
+                                    disabled={isLoading}
                                 >
                                     <option value="" disabled>Chọn Quận/Huyện *</option>
                                     {districts.map((district, index) => (
@@ -200,14 +206,17 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
+                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Địa chỉ chi tiết *</span>
                             </div>
                             {errors.address && <span className="error">{errors.address}</span>}
                         </div>
 
-                        <button type="submit" className="confirm-btn">
-                            Hoàn tất đơn hàng
+                        <button type="submit" className="confirm-btn" disabled={isLoading}>
+                            
+                                "Hoàn tất đơn hàng"
+                        
                         </button>
                     </form>
                 </div>
@@ -258,7 +267,7 @@ const Checkout = () => {
                         
                         <div 
                             className={`payment-option ${formData.paymentMethod === "COD" ? "selected" : ""}`}
-                            onClick={() => handlePaymentMethodChange("COD")}
+                            onClick={() => !isLoading && handlePaymentMethodChange("COD")}
                         >
                             <input
                                 type="radio"
@@ -267,13 +276,14 @@ const Checkout = () => {
                                 checked={formData.paymentMethod === "COD"}
                                 onChange={() => handlePaymentMethodChange("COD")}
                                 id="cod-payment"
+                                disabled={isLoading}
                             />
                             <label htmlFor="cod-payment">Thanh toán khi nhận hàng (COD)</label>
                         </div>
                         
                         <div 
                             className={`payment-option ${formData.paymentMethod === "BANK" ? "selected" : ""}`}
-                            onClick={() => handlePaymentMethodChange("BANK")}
+                            onClick={() => !isLoading && handlePaymentMethodChange("BANK")}
                         >
                             <input
                                 type="radio"
@@ -282,6 +292,7 @@ const Checkout = () => {
                                 checked={formData.paymentMethod === "BANK"}
                                 onChange={() => handlePaymentMethodChange("BANK")}
                                 id="bank-payment"
+                                disabled={isLoading}
                             />
                             <label htmlFor="bank-payment">Chuyển khoản ngân hàng</label>
                         </div>

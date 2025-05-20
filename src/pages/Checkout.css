@@ -257,6 +257,9 @@
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 4px 6px rgba(211, 160, 77, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .confirm-btn:hover {
@@ -267,6 +270,8 @@
 .confirm-btn:active {
     transform: translateY(0);
 }
+
+
 
 @media (max-width: 768px) {
     .checkout-container {
