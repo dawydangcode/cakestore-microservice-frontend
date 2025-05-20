@@ -8,18 +8,25 @@ const OrderDetail = () => {
     const [order, setOrder] = useState(null);
     const [productNames, setProductNames] = useState({});
 
+    // Fetch order details
     useEffect(() => {
         const fetchOrderDetail = async () => {
             try {
                 const response = await axiosClient.get(`/orders/${orderId}`);
+                console.log("Order detail response:", response.data); // Debug
                 setOrder(response.data);
             } catch (error) {
                 console.error("Failed to fetch order detail:", error);
             }
         };
+        fetchOrderDetail();
+    }, [orderId]);
 
+    // Fetch product names only when order and orderItems are available
+    useEffect(() => {
         const fetchProductNames = async () => {
-            if (!order || !order.orderItems) return;
+            if (!order || !order.orderItems || order.orderItems.length === 0) return;
+            console.log("Order items:", order.orderItems); // Debug
             const names = {};
             for (const item of order.orderItems) {
                 try {
@@ -32,16 +39,14 @@ const OrderDetail = () => {
             }
             setProductNames(names);
         };
-
-        fetchOrderDetail();
-        if (order) fetchProductNames();
-    }, [orderId, order]);
+        fetchProductNames();
+    }, [order?.orderItems]);
 
     if (!order) return <div>Loading...</div>;
 
     return (
         <div className="order-detail">
-            <h2>Chi tiết đơn hàng #{order.id}</h2>
+            <h2>Chi tiết đơn hàng #{order.orderId}</h2>
             <table>
                 <thead>
                     <tr>
@@ -53,8 +58,8 @@ const OrderDetail = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {order.orderItems.map((item) => (
-                        <tr key={item.id}>
+                    {order.orderItems.map((item, index) => (
+                        <tr key={item.orderItemId || `item-${item.productId}-${index}`}>
                             <td>{productNames[item.productId] || `Sản phẩm #${item.productId}`}</td>
                             <td>{item.productId}</td>
                             <td>{item.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
@@ -66,8 +71,7 @@ const OrderDetail = () => {
             </table>
             <div className="order-summary">
                 <p>Giá sản phẩm: {order.totalPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</p>
-                <p>Giao hàng tận nơi: 80,000₫</p>
-                <p><strong>Tổng tiền: {(order.totalPrice + 80000).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</strong></p>
+                <p><strong>Tổng tiền: {(order.totalPrice).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</strong></p>
             </div>
             <div className="order-address">
                 <h3>Địa chỉ thanh toán</h3>
@@ -76,7 +80,7 @@ const OrderDetail = () => {
                 <p>Địa chỉ: {order.address}</p>
                 <p>Tỉnh/thành phố: {order.district}</p>
                 <p>Số điện thoại: {order.phoneNumber}</p>
-                <p>Email: {order.userName}@example.com</p>
+                <p>Email: {order.email}</p>
             </div>
         </div>
     );

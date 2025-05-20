@@ -28,7 +28,6 @@ const Checkout = () => {
     });
 
     const [errors, setErrors] = useState({});
-    const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
 
     const formatPrice = (price) => {
         return price.toLocaleString("vi-VN");
@@ -74,7 +73,6 @@ const Checkout = () => {
             return;
         }
 
-        setIsLoading(true); // Bật spinner
         try {
             const startTime = performance.now();
             const orderRequest = {
@@ -89,20 +87,23 @@ const Checkout = () => {
             console.log("Sending order request:", orderRequest);
 
             const response = await axiosClient.post("/orders/create", orderRequest);
+            console.log("API response:", response.data);
+
+            const orderId = response.data.orderId || "Không xác định";
             const endTime = performance.now();
             console.log(`Order created successfully in ${(endTime - startTime) / 1000} seconds:`, response.data);
 
             await Swal.fire({
                 icon: "success",
                 title: "Thành công!",
-                text: `Đơn hàng đã được tạo thành công! Mã đơn hàng: ${response.data.id}`,
+                text: `Đơn hàng đã được tạo thành công! Mã đơn hàng: ${orderId}`,
                 confirmButtonText: "Xem đơn hàng",
                 showCancelButton: true,
                 cancelButtonText: "Về trang chủ"
             }).then((result) => {
-                if (result.isConfirmed) {
-                    console.log("Navigating to order:", response.data.id);
-                    navigate(`/orders/${response.data.id}`);
+                if (result.isConfirmed && response.data.orderId) {
+                    console.log("Navigating to order:", response.data.orderId);
+                    navigate(`/order/${response.data.orderId}`);
                 } else {
                     console.log("Navigating to home");
                     navigate("/");
@@ -116,8 +117,6 @@ const Checkout = () => {
                 text: `Tạo đơn hàng thất bại: ${error.response?.data?.message || error.message}`,
                 confirmButtonText: "OK"
             });
-        } finally {
-            setIsLoading(false); // Tắt spinner
         }
     };
 
@@ -140,7 +139,6 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
-                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Họ và tên *</span>
                             </div>
@@ -156,7 +154,6 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
-                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Điện thoại *</span>
                             </div>
@@ -171,7 +168,6 @@ const Checkout = () => {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     placeholder=" "
-                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Email</span>
                             </div>
@@ -185,7 +181,6 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     className={formData.district ? "has-value" : ""}
                                     required
-                                    disabled={isLoading}
                                 >
                                     <option value="" disabled>Chọn Quận/Huyện *</option>
                                     {districts.map((district, index) => (
@@ -206,17 +201,14 @@ const Checkout = () => {
                                     onChange={handleInputChange}
                                     placeholder=" "
                                     required
-                                    disabled={isLoading}
                                 />
                                 <span className="floating-label">Địa chỉ chi tiết *</span>
                             </div>
                             {errors.address && <span className="error">{errors.address}</span>}
                         </div>
 
-                        <button type="submit" className="confirm-btn" disabled={isLoading}>
-                            
-                                "Hoàn tất đơn hàng"
-                        
+                        <button type="submit" className="confirm-btn">
+                            Hoàn tất đơn hàng
                         </button>
                     </form>
                 </div>
@@ -267,7 +259,7 @@ const Checkout = () => {
                         
                         <div 
                             className={`payment-option ${formData.paymentMethod === "COD" ? "selected" : ""}`}
-                            onClick={() => !isLoading && handlePaymentMethodChange("COD")}
+                            onClick={() => handlePaymentMethodChange("COD")}
                         >
                             <input
                                 type="radio"
@@ -276,14 +268,13 @@ const Checkout = () => {
                                 checked={formData.paymentMethod === "COD"}
                                 onChange={() => handlePaymentMethodChange("COD")}
                                 id="cod-payment"
-                                disabled={isLoading}
                             />
                             <label htmlFor="cod-payment">Thanh toán khi nhận hàng (COD)</label>
                         </div>
                         
                         <div 
                             className={`payment-option ${formData.paymentMethod === "BANK" ? "selected" : ""}`}
-                            onClick={() => !isLoading && handlePaymentMethodChange("BANK")}
+                            onClick={() => handlePaymentMethodChange("BANK")}
                         >
                             <input
                                 type="radio"
@@ -292,7 +283,6 @@ const Checkout = () => {
                                 checked={formData.paymentMethod === "BANK"}
                                 onChange={() => handlePaymentMethodChange("BANK")}
                                 id="bank-payment"
-                                disabled={isLoading}
                             />
                             <label htmlFor="bank-payment">Chuyển khoản ngân hàng</label>
                         </div>
