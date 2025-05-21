@@ -22,6 +22,7 @@ import SignUp from "./components/SignUp";
 import ForgotPassword from "./components/ForgotPassword";
 import SearchPage from "./pages/SearchPage";
 import AdminChat from './components/admin/AdminChat';
+import PaymentResult from "./components/payment/PaymentResult";
 import "./App.css";
 
 const PrivateRoute = ({ element, allowedRole }) => {
@@ -56,6 +57,8 @@ const AppContent = () => {
                         <Route path="/orders" element={<PrivateRoute element={<><Navbar /><OrderList /></>} />} />
                         <Route path="/order/:orderId" element={<PrivateRoute element={<><Navbar /><OrderDetail /></>} />} />
                         <Route path="/search" element={<><Navbar /><SearchPage /></>} />
+                        <Route path="/checkout/success" element={<PaymentResult />} />
+                        <Route path="/checkout/cancel" element={<PaymentResult />} />
                         <Route path="/admin/*" element={<PrivateRoute element={<AdminLayout />} allowedRole="ROLE_ADMIN" />}>
                             <Route path="dashboard" element={<AdminDashboard />} />
                             <Route path="products" element={<Admin />} />

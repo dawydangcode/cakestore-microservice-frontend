@@ -16,7 +16,7 @@ const districts = [
 const Checkout = () => {
     const { cart, clearCart } = useContext(CartContext);
     const navigate = useNavigate();
-    const SHIPPING_FEE = 40000; // Phí vận chuyển cố định
+    const SHIPPING_FEE = 0;
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -54,10 +54,14 @@ const Checkout = () => {
         } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
             newErrors.phoneNumber = "Điện thoại phải là số và có 10 chữ số";
         }
+        if (!formData.email) {
+            newErrors.email = "Email là bắt buộc";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = "Email không hợp lệ";
+        }
         if (!formData.district) newErrors.district = "Quận/Huyện là bắt buộc";
         if (!formData.address) newErrors.address = "Địa chỉ chi tiết là bắt buộc";
         setErrors(newErrors);
-        console.log("Validation errors:", newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
@@ -71,38 +75,40 @@ const Checkout = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log("Submitting form with data:", formData);
-        if (!validateForm()) {
-            console.log("Form validation failed");
-            return;
-        }
+    e.preventDefault();
+    console.log("Submitting form with data:", formData);
+    if (!validateForm()) {
+        console.log("Form validation failed");
+        return;
+    }
 
-        try {
-            const startTime = performance.now();
-            const orderRequest = {
-                fullName: formData.fullName,
-                phoneNumber: formData.phoneNumber,
-                email: formData.email,
-                district: formData.district,
-                address: formData.address,
-                note: formData.note,
-                paymentMethod: formData.paymentMethod,
-                shippingFee: SHIPPING_FEE,
-                totalPrice: calculateTotal()
-            };
-            console.log("Sending order request:", orderRequest);
+    try {
+        const orderRequest = {
+            fullName: formData.fullName,
+            phoneNumber: formData.phoneNumber,
+            email: formData.email,
+            district: formData.district,
+            address: formData.address,
+            note: formData.note,
+            paymentMethod: formData.paymentMethod,
+            shippingFee: SHIPPING_FEE,
+            totalPrice: calculateTotal()
+        };
+        console.log("Sending order request:", orderRequest);
 
-            const response = await axiosClient.post("/orders/create", orderRequest);
-            console.log("API response:", response.data);
+        const response = await axiosClient.post("/orders/create", orderRequest);
+        console.log("API response:", response.data);
 
-            // Clear cart after successful order creation
+        const orderId = response.data.orderId || "Không xác định";
+        if (formData.paymentMethod === "BANK") {
+            const qrResponse = await axiosClient.post("/orders/generate-qr", {
+                orderId,
+                amount: calculateTotal().toString()
+            });
+            // Chuyển hướng trực tiếp đến checkoutUrl
+            window.location.href = qrResponse.data.checkoutUrl;
+        } else {
             await clearCart();
-
-            const orderId = response.data.orderId || "Không xác định";
-            const endTime = performance.now();
-            console.log(`Order created successfully in ${(endTime - startTime) / 1000} seconds:`, response.data);
-
             await Swal.fire({
                 icon: "success",
                 title: "Thành công!",
@@ -119,16 +125,17 @@ const Checkout = () => {
                     navigate("/");
                 }
             });
-        } catch (error) {
-            console.error("Failed to create order:", error.message, error.response?.data);
-            await Swal.fire({
-                icon: "error",
-                title: "Lỗi!",
-                text: `Tạo đơn hàng thất bại: ${error.response?.data?.message || error.message}`,
-                confirmButtonText: "OK"
-            });
         }
-    };
+    } catch (error) {
+        console.error("Failed to create order:", error.message, error.response?.data);
+        await Swal.fire({
+            icon: "error",
+            title: "Lỗi!",
+            text: `Tạo đơn hàng thất bại: ${error.response?.data?.message || error.message}`,
+            confirmButtonText: "OK"
+        });
+    }
+};
 
     return (
         <div className="checkout-page">
@@ -154,7 +161,7 @@ const Checkout = () => {
                             </div>
                             {errors.fullName && <span className="error">{errors.fullName}</span>}
                         </div>
-                        
+
                         <div className="form-group">
                             <div className="floating-label-input">
                                 <input
@@ -169,7 +176,7 @@ const Checkout = () => {
                             </div>
                             {errors.phoneNumber && <span className="error">{errors.phoneNumber}</span>}
                         </div>
-                        
+
                         <div className="form-group">
                             <div className="floating-label-input">
                                 <input
@@ -178,11 +185,13 @@ const Checkout = () => {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     placeholder=" "
+                                    required
                                 />
-                                <span className="floating-label">Email</span>
+                                <span className="floating-label">Email *</span>
                             </div>
+                            {errors.email && <span className="error">{errors.email}</span>}
                         </div>
-                        
+
                         <div className="form-group">
                             <div className="floating-label-input">
                                 <select
@@ -201,7 +210,7 @@ const Checkout = () => {
                             </div>
                             {errors.district && <span className="error">{errors.district}</span>}
                         </div>
-                        
+
                         <div className="form-group">
                             <div className="floating-label-input">
                                 <input
@@ -222,7 +231,7 @@ const Checkout = () => {
                         </button>
                     </form>
                 </div>
-                
+
                 <div className="order-summary">
                     <h2>Thông Tin Đơn Hàng</h2>
                     <div className="order-items">
@@ -243,30 +252,24 @@ const Checkout = () => {
                             </div>
                         ))}
                     </div>
-                    
                     <div className="order-total">
                         <span>Tạm tính:</span>
                         <span>{formatPrice(calculateSubtotal())} đ</span>
                     </div>
-                    
                     <div className="order-total">
                         <span>Phí vận chuyển:</span>
                         <span>{formatPrice(SHIPPING_FEE)} đ</span>
                     </div>
-                    
                     <div className="order-total">
                         <span>Giảm giá:</span>
                         <span>0 đ</span>
                     </div>
-                    
                     <div className="order-total final">
                         <span>Tổng thanh toán:</span>
                         <span>{formatPrice(calculateTotal())} đ</span>
                     </div>
-                    
                     <div className="payment-methods">
                         <h3>Phương thức thanh toán</h3>
-                        
                         <div 
                             className={`payment-option ${formData.paymentMethod === "COD" ? "selected" : ""}`}
                             onClick={() => handlePaymentMethodChange("COD")}
@@ -281,7 +284,6 @@ const Checkout = () => {
                             />
                             <label htmlFor="cod-payment">Thanh toán khi nhận hàng (COD)</label>
                         </div>
-                        
                         <div 
                             className={`payment-option ${formData.paymentMethod === "BANK" ? "selected" : ""}`}
                             onClick={() => handlePaymentMethodChange("BANK")}

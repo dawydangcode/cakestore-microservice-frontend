@@ -5,6 +5,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@payos/payos-checkout": "^1.0.8",
     "@reduxjs/toolkit": "^2.5.1",
     "@stomp/stompjs": "^7.1.1",
     "axios": "^1.7.9",
