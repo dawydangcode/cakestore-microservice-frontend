@@ -1,104 +1,139 @@
 .chat-widget {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    background-color: #ddd;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
 .chat-toggle {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  position: fixed; /* Đổi thành fixed để luôn ở góc phải dưới */
+  bottom: 20px;
+  right: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.chat-toggle:hover {
+  transform: scale(1.1);
+}
+
+.unread-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ff4d4f;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 8px;
+  font-size: 12px;
 }
 
 .chat-box {
-    width: 300px;
-    height: 400px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
+  width: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 400px;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  position: fixed; /* Đảm bảo chat-box cũng cố định ở góc phải dưới */
+  bottom: 10px; /* Đặt phía trên nút toggle (20px + chiều cao nút) */
+  right: 20px;
+}
+
+.chat-box.closed {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.chat-box.open {
+  max-height: 400px;
+  opacity: 1;
 }
 
 .chat-header {
-    background: #007bff;
-    color: white;
-    padding: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  background: #007bff;
+  color: white;
+  padding: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .chat-header button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
 .chat-messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
-    margin: 5px 0;
-    padding: 8px;
-    border-radius: 8px;
-    max-width: 70%;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 8px;
+  max-width: 70%;
 }
 
 .message.user {
-    background: #007bff;
-    color: white;
-    align-self: flex-end;
+  background: #007bff;
+  color: white;
+  align-self: flex-end;
 }
 
 .message.support {
-    background: #f1f1f1;
-    color: black;
-    align-self: flex-start;
+  background: #f1f1f1;
+  color: black;
+  align-self: flex-start;
 }
 
 .message p {
-    margin: 0;
+  margin: 0;
 }
 
 .message small {
-    font-size: 10px;
-    opacity: 0.7;
+  font-size: 10px;
+  opacity: 0.7;
 }
 
 .chat-input {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
 }
 
 .chat-input input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-right: 5px;
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 5px;
 }
 
 .chat-input button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
 }

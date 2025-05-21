@@ -53,6 +53,12 @@
     color: #fff;
 }
 
+.user-list li.new-message {
+    border: 3px solid black;
+    font-weight: 500;
+
+}
+
 .chat-area {
     flex: 1;
     display: flex;
@@ -78,7 +84,7 @@
     overflow-y: auto;
     background-color: #f9fafb;
     display: flex;
-    flex-direction: column; /* Đảm bảo tin nhắn hiển thị từ trên xuống (cũ trên, mới dưới) */
+    flex-direction: column;
 }
 
 .chat-messages .message {
@@ -97,7 +103,6 @@
     opacity: 0.8;
 }
 
-/* Tin nhắn từ khách hàng (bên trái) */
 .chat-messages .user,
 .chat-messages .guest {
     background-color: #e2e8f0;
@@ -106,7 +111,6 @@
     border-bottom-left-radius: 4px;
 }
 
-/* Tin nhắn từ support (bên phải) */
 .chat-messages .support {
     background-color: #3b82f6;
     color: #fff;

@@ -75,6 +75,16 @@
     border-left: 4px solid #3b82f6;
 }
 
+.sidebar ul li a.blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { background-color: rgba(59, 130, 246, 0.15); }
+    50% { background-color: rgba(255, 77, 79, 0.3); }
+    100% { background-color: rgba(59, 130, 246, 0.15); }
+}
+
 .sidebar ul li button.logout-btn {
     color: #cbd5e1;
     background: none;

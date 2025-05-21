@@ -104,7 +104,7 @@ const ProductDetail = () => {
                 const response = await axiosClient.get("/products/list");
                 const filteredProducts = response.data
                     .filter(p => p.categoryId === product.categoryId && p.id !== parseInt(id))
-                    .slice(0, 4);
+                     .slice(0, 4);
                 setRelatedProducts(filteredProducts);
             } catch (error) {
                 console.error("Lỗi khi lấy sản phẩm liên quan:", error);

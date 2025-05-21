@@ -33,7 +33,11 @@ const PrivateRoute = ({ element, allowedRole }) => {
 
 const AppContent = () => {
     const { isLoggedIn, roles } = useAuth();
-    const [showChatWidget, setShowChatWidget] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+
+    const toggleChatWidget = () => {
+        setIsChatOpen(prev => !prev);
+    };
 
     return (
         <CartProvider>
@@ -62,15 +66,12 @@ const AppContent = () => {
                     </Routes>
                     {isLoggedIn && !roles.includes('ROLE_ADMIN') && (
                         <>
-                            {!showChatWidget && (
-                                <button
-                                    className="chat-toggle-btn"
-                                    onClick={() => setShowChatWidget(true)}
-                                >
-                                    💬
-                                </button>
-                            )}
-                            {showChatWidget && <ChatWidget onClose={() => setShowChatWidget(false)} />}
+                            
+                            <ChatWidget
+                                isOpen={isChatOpen}
+                                onClose={() => setIsChatOpen(false)}
+                                onToggle={toggleChatWidget}
+                            />
                         </>
                     )}
                 </div>
